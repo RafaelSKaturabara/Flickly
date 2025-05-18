@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,7 +23,9 @@ func SetupSwagger(router *gin.Engine) {
 
 	// SEMPRE forçar regeneração do Swagger para garantir que está atualizado
 	fmt.Println("\033[33mRemovendo documentação Swagger existente...\033[0m")
-	os.RemoveAll("docs")
+	if err := os.RemoveAll("docs"); err != nil {
+		log.Printf("Erro ao remover diretório docs: %v", err)
+	}
 	if err := os.MkdirAll("docs", 0755); err != nil {
 		fmt.Printf("\033[31mErro ao criar diretório docs: %v\033[0m\n", err)
 	}
