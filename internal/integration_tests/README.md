@@ -36,6 +36,25 @@ Usar o flag `-short` para ignorar os testes de integração (útil durante o des
 go test ./... -short
 ```
 
+### Executar Testes no Ambiente Docker
+
+Para executar os testes em um ambiente isolado com todas as dependências (como banco de dados):
+
+```bash
+docker-compose -f docker-compose.test.yml up --build
+```
+
+## Execução no CI/CD
+
+Os testes de integração são automaticamente executados no pipeline CI/CD do GitHub Actions quando um pull request é aberto ou quando há push na branch principal. 
+
+A configuração do workflow está no arquivo `.github/workflows/go.yml` e inclui as seguintes etapas:
+
+1. Lint do código
+2. Execução dos testes unitários (com flag `-short`)
+3. Execução dos testes de integração
+4. Build do aplicativo (somente se todos os testes passarem)
+
 ## Configuração do Ambiente de Teste
 
 Os testes são configurados para usar o ambiente real da aplicação. Se você precisar configurar um ambiente específico para testes, edite as funções `setup()` e `teardown()` no arquivo `integration_test.go`.
