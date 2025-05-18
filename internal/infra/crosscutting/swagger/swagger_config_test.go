@@ -43,7 +43,11 @@ func TestSetupSwagger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar diretório temporário: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Erro ao remover diretório temporário: %v", err)
+		}
+	}()
 
 	// Mudar para o diretório temporário
 	originalDir, err := os.Getwd()
@@ -103,7 +107,11 @@ func TestRegenerarSwagger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar diretório temporário: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Erro ao remover diretório temporário: %v", err)
+		}
+	}()
 
 	// Mudar para o diretório temporário
 	originalDir, err := os.Getwd()
@@ -139,8 +147,14 @@ func TestFileExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar arquivo temporário: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
-	defer tmpFile.Close()
+	defer func() {
+		if err := os.Remove(tmpFile.Name()); err != nil {
+			t.Logf("Erro ao remover arquivo temporário: %v", err)
+		}
+		if err := tmpFile.Close(); err != nil {
+			t.Logf("Erro ao fechar arquivo temporário: %v", err)
+		}
+	}()
 
 	// Teste com arquivo que existe
 	if !fileExists(tmpFile.Name()) {
@@ -182,8 +196,14 @@ func TestAdicionarTimestampNoJSON(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar arquivo temporário: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
-	defer tmpFile.Close()
+	defer func() {
+		if err := os.Remove(tmpFile.Name()); err != nil {
+			t.Logf("Erro ao remover arquivo temporário: %v", err)
+		}
+		if err := tmpFile.Close(); err != nil {
+			t.Logf("Erro ao fechar arquivo temporário: %v", err)
+		}
+	}()
 
 	// Escrever o conteúdo JSON no arquivo
 	if err := os.WriteFile(tmpFile.Name(), []byte(jsonConteudo), 0644); err != nil {
@@ -261,7 +281,11 @@ func TestVerificarTiposAlterados(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar diretório temporário: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Erro ao remover diretório temporário: %v", err)
+		}
+	}()
 
 	// Mudar para o diretório temporário
 	originalDir, err := os.Getwd()
@@ -307,7 +331,11 @@ func TestDiretorioModificadoDepois(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar diretório temporário: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Erro ao remover diretório temporário: %v", err)
+		}
+	}()
 
 	// Tempo de referência (passado)
 	tempoReferencia := time.Now().Add(-time.Hour)
@@ -345,7 +373,11 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao criar diretório temporário: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
+	defer func() {
+		if err := os.RemoveAll(tempDir); err != nil {
+			t.Logf("Erro ao remover diretório temporário: %v", err)
+		}
+	}()
 
 	// Mudar para o diretório temporário
 	originalDir, err := os.Getwd()
@@ -470,7 +502,9 @@ func TestVerificarSwaggerExistente(t *testing.T) {
 				t.Logf("Erro ao restaurar arquivo original: %v", err)
 			}
 		} else {
-			os.Remove(swaggerJsonPath)
+			if err := os.Remove(swaggerJsonPath); err != nil {
+				t.Logf("Erro ao remover arquivo swagger.json: %v", err)
+			}
 		}
 	}()
 
@@ -483,7 +517,9 @@ func TestVerificarSwaggerExistente(t *testing.T) {
 	verificarSwaggerExistente()
 
 	// Teste com arquivo inexistente
-	os.Remove(swaggerJsonPath)
+	if err := os.Remove(swaggerJsonPath); err != nil {
+		t.Logf("Erro ao remover arquivo swagger.json: %v", err)
+	}
 
 	// Testar função - não deve causar pânico com arquivo inexistente
 	verificarSwaggerExistente()
