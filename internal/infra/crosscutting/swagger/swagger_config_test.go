@@ -50,7 +50,7 @@ func TestSetupSwagger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao obter diretório atual: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() { _ = os.Chdir(originalDir) }()
 
 	if err := os.Chdir(tempDir); err != nil {
 		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
@@ -110,7 +110,7 @@ func TestRegenerarSwagger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao obter diretório atual: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() { _ = os.Chdir(originalDir) }()
 
 	if err := os.Chdir(tempDir); err != nil {
 		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
@@ -268,7 +268,7 @@ func TestVerificarTiposAlterados(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao obter diretório atual: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() { _ = os.Chdir(originalDir) }()
 
 	if err := os.Chdir(tempDir); err != nil {
 		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
@@ -352,7 +352,7 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Erro ao obter diretório atual: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() { _ = os.Chdir(originalDir) }()
 
 	if err := os.Chdir(tempDir); err != nil {
 		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
