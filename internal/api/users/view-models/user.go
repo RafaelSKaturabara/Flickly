@@ -11,3 +11,8 @@ type CreatePessoaResponse struct {
 	Nome      string    `json:"nome"`
 	Idade     int       `json:"idade"`
 }
+
+type CreateUserRequest struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
