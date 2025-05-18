@@ -9,7 +9,7 @@ import (
 
 func InjectServices(serviceCollection utilities.IServiceCollection) {
 	mediatR := mediator.NewMediatR()
-
+	// teste
 	utilities.AddService[mediator.Mediator](serviceCollection, mediatR)
 	utilities.AddService[repositories.IUserRepository](serviceCollection, infrarepositories.NewUserRepository())
 }
