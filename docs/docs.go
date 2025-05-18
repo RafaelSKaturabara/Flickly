@@ -122,7 +122,7 @@ const docTemplate = `{
         },
         "/user": {
             "post": {
-                "description": "Cria um novo usuário com base nos dados fornecidos",
+                "description": "Cria um novo usuário com os dados fornecidos",
                 "consumes": [
                     "application/json"
                 ],
@@ -132,7 +132,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Criar um novo usuário",
+                "summary": "Criar usuário",
                 "parameters": [
                     {
                         "description": "Dados do usuário",
@@ -140,24 +140,59 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/flickly_internal_domain_users_commands.CreateUserCommand"
+                            "$ref": "#/definitions/flickly_internal_api_users_viewmodels.CreateUserRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/flickly_internal_api_users_viewmodels.CreateUserResponse"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "type": "object"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "flickly_internal_api_users_viewmodels.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "flickly_internal_api_users_viewmodels.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "flickly_internal_api_users_viewmodels.TokenResponse": {
             "type": "object",
             "properties": {
@@ -168,17 +203,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "token_type": {
-                    "type": "string"
-                }
-            }
-        },
-        "flickly_internal_domain_users_commands.CreateUserCommand": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 }
             }

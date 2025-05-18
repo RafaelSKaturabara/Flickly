@@ -37,6 +37,10 @@ func (suite *FullFlowIntegrationTestSuite) SetupSuite() {
 	ioc.InjectServices(serviceCollection)
 	ioc.InjectMediatorHandlers(serviceCollection)
 
+	// Registrar o mapper
+	mapper := utilities.NewAutoMapper()
+	utilities.AddService[utilities.Mapper](serviceCollection, mapper)
+
 	// Configurar rotas
 	users.Startup(router, serviceCollection)
 	flickly.Startup(router)
@@ -65,7 +69,7 @@ func (suite *FullFlowIntegrationTestSuite) TestFullUserFlow() {
 	suite.router.ServeHTTP(w, req)
 
 	// Verificar o registro
-	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	assert.Equal(suite.T(), http.StatusCreated, w.Code)
 
 	// 2. Autenticar o usuário recém-criado
 	loginPayload := map[string]string{

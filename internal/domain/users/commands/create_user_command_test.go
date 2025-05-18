@@ -130,7 +130,7 @@ func TestHandle_Error(t *testing.T) {
 	domainErr, ok := err.(*core.DomainError)
 	assert.True(t, ok, "Erro retornado deve ser do tipo *core.DomainError")
 	assert.Equal(t, "Usuário já cadastrado", domainErr.Message, "A mensagem de erro deve ser correta")
-	assert.Equal(t, 1, domainErr.ErrorCode, "O código de erro deve ser 1")
+	assert.Equal(t, 1, domainErr.Code, "O código de erro deve ser 1")
 
 	assert.True(t, mockRepo.CreateUserCalled, "O método CreateUser do repositório deve ser chamado")
 }

@@ -28,6 +28,7 @@ func main() {
 	router := gin.Default()
 	serviceCollection := utilities.NewServiceCollection()
 
+	ioc.InitAutomapper(serviceCollection)
 	ioc.InjectServices(serviceCollection)
 	ioc.InjectMediatorHandlers(serviceCollection)
 
