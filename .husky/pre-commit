@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged 
+echo "Executando testes..."
+make test
+
+echo "Executando lint..."
+make lint 

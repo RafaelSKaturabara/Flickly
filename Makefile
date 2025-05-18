@@ -29,7 +29,7 @@ test:
 # Executar lint
 lint:
 	@echo "Executando lint..."
-	golangci-lint run
+	@golangci-lint run --max-issues-per-linter=0 --max-same-issues=0 || (echo "Lint falhou!" && exit 1)
 
 # Gerar relatório de cobertura
 coverage:
