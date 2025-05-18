@@ -5,14 +5,15 @@ import (
 	"time"
 )
 
-type CreatePessoaResponse struct {
+type CreateUserResponse struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
-	Nome      string    `json:"nome"`
-	Idade     int       `json:"idade"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
 }
 
 type CreateUserRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

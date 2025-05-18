@@ -1,14 +1,12 @@
 package core
 
-type DomainError struct {
-	ErrorCode  int
-	Message    string
-	Err        string
-	StatusCode int
-}
+import "errors"
 
-func (e *DomainError) Error() string {
-	return e.Message
+type DomainError struct {
+	error
+	Code       int
+	Message    string
+	StatusCode int
 }
 
 type DomainErrorBuilder struct {
@@ -16,16 +14,20 @@ type DomainErrorBuilder struct {
 }
 
 func NewDomainErrorBuilder(err error) *DomainErrorBuilder {
+	defaultErr := errors.New("generic error")
+	if err != nil {
+		defaultErr = err
+	}
 	return &DomainErrorBuilder{
 		DomainError: DomainError{
-			Err:        err.Error(),
+			error:      defaultErr,
 			StatusCode: 400,
 		},
 	}
 }
 
-func (b *DomainErrorBuilder) WithErrorCode(errorCode int) *DomainErrorBuilder {
-	b.DomainError.ErrorCode = errorCode
+func (b *DomainErrorBuilder) WithErrorCode(code int) *DomainErrorBuilder {
+	b.DomainError.Code = code
 	return b
 }
 

@@ -34,6 +34,10 @@ func (suite *APIIntegrationTestSuite) SetupSuite() {
 	ioc.InjectServices(serviceCollection)
 	ioc.InjectMediatorHandlers(serviceCollection)
 
+	// Registrar o mapper
+	mapper := utilities.NewAutoMapper()
+	utilities.AddService[utilities.Mapper](serviceCollection, mapper)
+
 	// Configurar rotas
 	users.Startup(router, serviceCollection)
 	flickly.Startup(router)
@@ -88,7 +92,7 @@ func (suite *APIIntegrationTestSuite) TestUserRegistration() {
 	suite.router.ServeHTTP(w, req)
 
 	// Verificar o resultado
-	assert.Equal(suite.T(), http.StatusOK, w.Code)
+	assert.Equal(suite.T(), http.StatusCreated, w.Code)
 }
 
 // TestAuthentication testa o fluxo de autenticação
