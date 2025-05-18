@@ -1,4 +1,4 @@
-.PHONY: run test coverage swagger clean build clean-swagger
+.PHONY: run test coverage swagger clean build clean-swagger lint
 
 # Variáveis
 BINARY_NAME=flickly
@@ -11,6 +11,10 @@ deps:
 	@echo "Instalando dependências..."
 	go mod download
 	go mod tidy
+	@if ! command -v golangci-lint &> /dev/null; then \
+		echo "Instalando golangci-lint..."; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2; \
+	fi
 
 # Rodar a aplicação
 run: swagger
@@ -21,6 +25,11 @@ run: swagger
 test:
 	@echo "Executando testes..."
 	go test ./... -v
+
+# Executar lint
+lint:
+	@echo "Executando lint..."
+	golangci-lint run
 
 # Gerar relatório de cobertura
 coverage:
