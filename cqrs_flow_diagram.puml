@@ -1,0 +1,65 @@
+@startuml Flickly - Fluxo CQRS
+
+' Definição de estilos e cores
+skinparam packageStyle rectangle
+skinparam backgroundColor transparent
+skinparam arrowColor #505050
+skinparam sequenceArrowThickness 2
+skinparam sequenceMessageAlign center
+
+actor "Cliente" as Client
+
+participant "API Controller\n(UserController)" as Controller
+participant "Mediator" as Mediator
+participant "Command Handler\n(CreateUserCommandHandler)" as CommandHandler
+participant "Repository\n(UserRepository)" as Repository
+participant "Domain Entity\n(User)" as Entity
+
+title Fluxo de Comando (CQRS) - Criação de Usuário
+
+Client -> Controller: POST /user\n{name, email}
+activate Controller
+
+' Fase 1: Controller cria o Command
+Controller -> Controller: Cria CreateUserCommand\ncom dados da requisição
+
+' Fase 2: Controller envia o Command para o Mediator
+Controller -> Mediator: Send(CreateUserCommand)
+activate Mediator
+
+' Fase 3: Mediator determina o Handler correto
+Mediator -> Mediator: Identifica o \nCommandHandler apropriado
+
+' Fase 4: Mediator delega para o Handler
+Mediator -> CommandHandler: Handle(CreateUserCommand)
+activate CommandHandler
+
+' Fase 5: Handler cria a entidade de domínio
+CommandHandler -> Entity: NewUser(name, email)
+activate Entity
+Entity --> CommandHandler: user
+deactivate Entity
+
+' Fase 6: Handler usa o Repository para persistir a entidade
+CommandHandler -> Repository: CreateUser(user)
+activate Repository
+Repository --> CommandHandler: error/nil
+deactivate Repository
+
+' Fase 7: Handler retorna a resposta
+CommandHandler --> Mediator: user, error
+deactivate CommandHandler
+
+' Fase 8: Mediator passa o resultado de volta
+Mediator --> Controller: user, error
+deactivate Mediator
+
+' Fase 9: Controller retorna a resposta HTTP
+alt sucesso
+    Controller --> Client: HTTP 200 OK\n{user}
+else erro
+    Controller --> Client: HTTP 4xx\n{error}
+end
+deactivate Controller
+
+@enduml 

@@ -1,0 +1,114 @@
+@startuml Flickly - Diagrama Arquitetural
+
+' Definição de estilos e cores
+skinparam packageStyle rectangle
+skinparam backgroundColor transparent
+skinparam arrowColor #505050
+skinparam componentStyle uml2
+
+' Definição de cores
+skinparam package {
+    BackgroundColor<<Entry>> #E5F2FF
+    BackgroundColor<<API>> #C2E0C6
+    BackgroundColor<<Domain>> #C6D9F0
+    BackgroundColor<<Infrastructure>> #F0D9C6
+    BackgroundColor<<CrossCutting>> #E0C6E0
+}
+
+' Pacotes Principais - Visão Arquitetural
+package "Pontos de Entrada" as EntryPoints <<Entry>> {
+    [cmd/flickly/main.go] as Main
+}
+
+package "Camada de API" as API <<API>> {
+    package "API Flickly" as APIFlickly {
+        [api/flickly/router.go] as FlicklyRouter
+    }
+    
+    package "API Usuários" as APIUsers {
+        [api/users/router.go] as UsersRouter
+        [api/users/controllers/user-controller.go] as UserController
+    }
+}
+
+package "Camada de Domínio" as Domain <<Domain>> {
+    package "Core" as Core {
+        [domain/core/mediator/mediator.go] as Mediator
+        [domain/core/entity.go] as BaseEntity
+        [domain/core/domain-error.go] as DomainError
+    }
+    
+    package "Domínio de Usuários" as UsersDomain {
+        [domain/users/entities/user.go] as UserEntity
+        [domain/users/commands/create-user-command.go] as CreateUserCommand
+        [domain/users/repositories/IUserRepository] as IUserRepository
+    }
+    
+    package "Domínio de Flickly" as FlicklyDomain {
+        ' Exemplo de entidade futura
+        [domain/flickly/entities/*] as FlicklyEntities
+    }
+}
+
+package "Camada de Infraestrutura" as Infrastructure <<Infrastructure>> {
+    package "Cross-Cutting" as CrossCutting <<CrossCutting>> {
+        [infra/cross-cutting/utilities/*.go] as Utilities
+        [infra/cross-cutting/inversion-of-control/*.go] as IoC
+    }
+    
+    package "Repositórios" as Repositories {
+        [infra/data/users/repositories/user-repository.go] as UserRepository
+    }
+}
+
+' Dependências entre camadas
+Main --> API
+Main --> IoC
+
+API --> Domain
+APIUsers --> UsersDomain
+APIFlickly ..> FlicklyDomain
+
+UsersDomain --> Core
+FlicklyDomain --> Core
+
+Repositories ..> Domain
+UserRepository ..|> IUserRepository
+
+CrossCutting ..> Domain
+IoC --> Domain
+IoC --> Infrastructure
+
+' Comentários explicativos
+note right of Main
+  Ponto de entrada da aplicação
+end note
+
+note right of IoC
+  Injeção de dependências
+  Fornece implementações concretas
+  para as interfaces do domínio
+end note
+
+note top of CrossCutting
+  Utilitários e serviços 
+  utilizados por todas as camadas
+end note
+
+note bottom of Core
+  Componentes base e abstrações
+  usados por todo o domínio
+end note
+
+note right of UsersDomain
+  Implementa as regras de negócio
+  relacionadas a usuários
+end note
+
+note bottom of Repositories
+  Implementações concretas
+  dos repositórios definidos
+  no domínio
+end note
+
+@enduml 

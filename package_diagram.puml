@@ -1,0 +1,170 @@
+@startuml Flickly - Diagrama de Pacotes e Dependências
+
+' Definição de estilos e cores
+skinparam packageStyle rectangle
+skinparam backgroundColor transparent
+skinparam componentStyle uml2
+
+' Definição de cores por camada
+skinparam package {
+    BackgroundColor<<API>> #C2E0C6
+    BackgroundColor<<Domain>> #C6D9F0
+    BackgroundColor<<Infrastructure>> #F0D9C6
+    BackgroundColor<<CrossCutting>> #E0C6E0
+    BackgroundColor<<Test>> #E0E0C6
+}
+
+' Pacotes Principais
+package "cmd" as cmd {
+    package "flickly" as cmd_flickly {
+        [main.go] as main
+    }
+}
+
+package "internal" as internal {
+    ' Camada API
+    package "api" as api <<API>> {
+        package "flickly" as api_flickly {
+            [router.go] as api_flickly_router
+            package "controllers" as api_flickly_controllers {
+            }
+            package "auto-mapper" as api_flickly_automapper {
+            }
+        }
+        
+        package "users" as api_users {
+            [router.go] as api_users_router
+            package "controllers" as api_users_controllers {
+                [user-controller.go] as users_controller
+            }
+            package "view-models" as api_users_viewmodels {
+                [token-response.go] as token_response
+            }
+        }
+    }
+    
+    ' Camada de Domínio
+    package "domain" as domain <<Domain>> {
+        package "core" as domain_core {
+            [domain-error.go] as domain_error
+            [entity.go] as domain_entity
+            
+            package "mediator" as domain_core_mediator {
+                [mediator.go] as mediator
+            }
+        }
+        
+        package "users" as domain_users {
+            package "entities" as domain_users_entities {
+                [user.go] as user_entity
+            }
+            
+            package "repositories" as domain_users_repositories {
+                interface "IUserRepository" as iuser_repository
+            }
+            
+            package "commands" as domain_users_commands {
+                [create-user-command.go] as create_user_command
+            }
+        }
+        
+        package "flickly" as domain_flickly {
+            package "entities" as domain_flickly_entities {
+            }
+            
+            package "repositories" as domain_flickly_repositories {
+            }
+            
+            package "commands" as domain_flickly_commands {
+            }
+        }
+    }
+    
+    ' Camada de Infraestrutura
+    package "infra" as infra <<Infrastructure>> {
+        package "cross-cutting" as infra_crosscutting <<CrossCutting>> {
+            package "utilities" as infra_utilities {
+                [service-collection-utility.go] as service_collection
+                [reflect-utility.go] as reflect_utility
+            }
+            
+            package "inversion-of-control" as infra_ioc {
+                [services-injector.go] as services_injector
+                [mediator-handlers-injector.go] as mediator_handlers_injector
+            }
+        }
+        
+        package "data" as infra_data {
+            package "users" as infra_data_users {
+                package "repositories" as infra_data_users_repositories {
+                    [user-repository.go] as user_repository_impl
+                }
+            }
+        }
+    }
+    
+    ' Testes de Integração
+    package "integration_tests" as integration_tests <<Test>> {
+        [api_integration_test.go] as api_integration_test
+        [data_integration_test.go] as data_integration_test
+        [full_flow_integration_test.go] as full_flow_integration_test
+        [integration_test.go] as integration_test
+    }
+}
+
+' Dependências
+main --> api_flickly_router
+main --> api_users_router
+main --> services_injector
+main --> mediator_handlers_injector
+
+api_flickly_router ..> domain_core
+
+api_users_router --> api_users_controllers
+api_users_router ..> infra_utilities
+
+users_controller --> domain_users_commands
+users_controller --> domain_core_mediator
+users_controller --> domain_users_repositories
+users_controller ..> api_users_viewmodels
+
+create_user_command --> domain_core_mediator
+create_user_command --> domain_users_entities
+create_user_command --> domain_users_repositories
+create_user_command ..> domain_core
+
+user_entity --> domain_entity
+
+user_repository_impl --> domain_users_entities
+user_repository_impl ..|> iuser_repository
+
+services_injector --> domain_core_mediator
+services_injector --> domain_users_repositories
+services_injector --> infra_utilities
+services_injector --> user_repository_impl
+
+mediator_handlers_injector --> domain_core_mediator
+mediator_handlers_injector --> domain_users_commands
+mediator_handlers_injector --> infra_utilities
+
+mediator ..> infra_utilities
+
+integration_test ..> integration_tests
+
+api_integration_test --> api_flickly
+api_integration_test --> api_users
+api_integration_test --> infra_ioc
+api_integration_test --> infra_utilities
+
+data_integration_test --> domain_core_mediator
+data_integration_test --> domain_users_entities
+data_integration_test --> domain_users_repositories
+data_integration_test --> infra_ioc
+data_integration_test --> infra_utilities
+
+full_flow_integration_test --> api_flickly
+full_flow_integration_test --> api_users
+full_flow_integration_test --> infra_ioc
+full_flow_integration_test --> infra_utilities
+
+@enduml 
