@@ -50,7 +50,8 @@ func (suite *APIIntegrationTestSuite) TestHealthEndpoint() {
 	assert.Equal(suite.T(), http.StatusOK, w.Code)
 	
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(suite.T(), err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(suite.T(), "ok", response["status"])
 	assert.Equal(suite.T(), "flickly", response["service"])
 }
@@ -64,7 +65,8 @@ func (suite *APIIntegrationTestSuite) TestVersionEndpoint() {
 	assert.Equal(suite.T(), http.StatusOK, w.Code)
 	
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(suite.T(), err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(suite.T(), "1.0.0", response["version"])
 	assert.Equal(suite.T(), "flickly", response["api"])
 }
@@ -111,7 +113,8 @@ func (suite *APIIntegrationTestSuite) TestAuthentication() {
 	// Se for 200, verificamos se há alguma resposta
 	if w.Code == http.StatusOK {
 		var response map[string]interface{}
-		json.Unmarshal(w.Body.Bytes(), &response)
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		assert.NoError(suite.T(), err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 		assert.NotEmpty(suite.T(), w.Body.String())
 	}
 }

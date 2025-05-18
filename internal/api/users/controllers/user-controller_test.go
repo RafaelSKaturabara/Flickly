@@ -111,7 +111,8 @@ func TestPostUser_Success(t *testing.T) {
 	
 	// Verificar o corpo da resposta
 	var response entities.User
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "Test User", response.Name, "O nome do usuário na resposta deve ser correto")
 	assert.Equal(t, "test@example.com", response.Email, "O email do usuário na resposta deve ser correto")
 }
@@ -207,7 +208,8 @@ func TestPostOauthToken_Success(t *testing.T) {
 	
 	// Verificar o corpo da resposta
 	var response viewmodels.TokenResponse
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "some_generated_token", response.AccessToken, "O token de acesso deve ser correto")
 	assert.Equal(t, "Bearer Test User", response.TokenType, "O tipo de token deve ser correto")
 	assert.Equal(t, 3600, response.ExpiresIn, "O tempo de expiração deve ser correto")
@@ -247,7 +249,8 @@ func TestPostOauthToken_InvalidCredentials(t *testing.T) {
 	
 	// Verificar o corpo da resposta
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "invalid_grant", response["error"], "A mensagem de erro deve ser 'invalid_grant'")
 }
 

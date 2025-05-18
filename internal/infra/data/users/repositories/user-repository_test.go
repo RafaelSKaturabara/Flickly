@@ -42,7 +42,8 @@ func TestGetUserByEmail(t *testing.T) {
 	// Configuração
 	repository := NewUserRepository()
 	user := entities.NewUser("Test User", "test@example.com")
-	repository.CreateUser(user)
+	err := repository.CreateUser(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução - usuário existente
 	retrievedUser, err := repository.GetUserByEmail("test@example.com")

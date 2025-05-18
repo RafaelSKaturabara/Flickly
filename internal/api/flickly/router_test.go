@@ -25,7 +25,8 @@ func TestStartup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status para /health deve ser 200 OK")
 	
 	var healthResponse map[string]string
-	json.Unmarshal(w.Body.Bytes(), &healthResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &healthResponse)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "ok", healthResponse["status"], "O status deve ser 'ok'")
 	assert.Equal(t, "flickly", healthResponse["service"], "O serviço deve ser 'flickly'")
 	
@@ -37,7 +38,8 @@ func TestStartup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status para /api/flickly/version deve ser 200 OK")
 	
 	var versionResponse map[string]string
-	json.Unmarshal(w.Body.Bytes(), &versionResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &versionResponse)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "1.0.0", versionResponse["version"], "A versão deve ser '1.0.0'")
 	assert.Equal(t, "flickly", versionResponse["api"], "A API deve ser 'flickly'")
 }
@@ -55,7 +57,8 @@ func TestGetHealth(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status deve ser 200 OK")
 	
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "ok", response["status"], "O status deve ser 'ok'")
 	assert.Equal(t, "flickly", response["service"], "O serviço deve ser 'flickly'")
 }
@@ -73,7 +76,8 @@ func TestGetVersion(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status deve ser 200 OK")
 	
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err, "Não deve ocorrer erro ao desserializar a resposta JSON")
 	assert.Equal(t, "1.0.0", response["version"], "A versão deve ser '1.0.0'")
 	assert.Equal(t, "flickly", response["api"], "A API deve ser 'flickly'")
 } 
