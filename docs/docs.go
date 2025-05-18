@@ -175,9 +175,6 @@ const docTemplate = `{
         "flickly_internal_domain_users_commands.CreateUserCommand": {
             "type": "object",
             "properties": {
-                "emai1l": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },

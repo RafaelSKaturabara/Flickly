@@ -1,4 +1,4 @@
-.PHONY: run test coverage swagger clean build
+.PHONY: run test coverage swagger clean build clean-swagger
 
 # Variáveis
 BINARY_NAME=flickly
@@ -53,6 +53,16 @@ clean:
 	@rm -f coverage.out
 	@echo "Limpeza concluída."
 
+# Limpar arquivos do Swagger
+clean-swagger:
+	@echo "Limpando arquivos do Swagger..."
+	@rm -rf docs
+	@echo "Arquivos do Swagger removidos."
+
+# Limpar tudo (binários e docs)
+clean-all: clean clean-swagger
+	@echo "Limpeza completa concluída."
+
 # Construir o binário
 build: swagger
 	@echo "Construindo aplicação..."
@@ -67,14 +77,16 @@ build-run: build
 # Ajuda
 help:
 	@echo "Comandos disponíveis:"
-	@echo "  make deps        - Instalar dependências"
-	@echo "  make run         - Executar a aplicação"
-	@echo "  make test        - Executar testes"
-	@echo "  make coverage    - Gerar relatório de cobertura de testes"
-	@echo "  make swagger     - Gerar documentação Swagger"
-	@echo "  make build       - Construir o binário"
-	@echo "  make build-run   - Construir e executar o binário"
-	@echo "  make clean       - Limpar arquivos gerados"
+	@echo "  make deps          - Instalar dependências"
+	@echo "  make run           - Executar a aplicação"
+	@echo "  make test          - Executar testes"
+	@echo "  make coverage      - Gerar relatório de cobertura de testes"
+	@echo "  make swagger       - Gerar documentação Swagger"
+	@echo "  make build         - Construir o binário"
+	@echo "  make build-run     - Construir e executar o binário"
+	@echo "  make clean         - Limpar arquivos gerados"
+	@echo "  make clean-swagger - Limpar apenas arquivos do Swagger"
+	@echo "  make clean-all     - Limpar todos os arquivos gerados"
 
 # Comando padrão
 default: help 

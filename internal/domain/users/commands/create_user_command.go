@@ -10,9 +10,8 @@ import (
 )
 
 type CreateUserCommand struct {
-	Name   string `json:"name"`
-	Email  string `json:"email"`
-	Emai1l string `json:"emai1l"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type CreateUserCommandHandler struct {
