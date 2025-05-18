@@ -279,14 +279,21 @@ func TestVerificarTiposAlterados(t *testing.T) {
 		t.Fatalf("Erro ao criar diretório docs: %v", err)
 	}
 
+	// Criar diretório monitorado pelo hash
+	dirHash := "internal/domain/users/commands"
+	if err := os.MkdirAll(dirHash, 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório monitorado: %v", err)
+	}
+
 	// Teste 1: Primeira execução (arquivo de hash não existe)
 	assert.True(t, verificarTiposAlterados(), "verificarTiposAlterados() deveria retornar true na primeira execução")
 
 	// Teste 2: Segunda execução (hash não mudou)
 	assert.False(t, verificarTiposAlterados(), "verificarTiposAlterados() deveria retornar false quando o hash não mudou")
 
-	// Criar arquivo de teste para alterar o hash
-	if err := os.WriteFile("test.go", []byte("package test"), 0644); err != nil {
+	// Criar arquivo de teste para alterar o hash dentro do diretório monitorado
+	testFile := dirHash + "/test.go"
+	if err := os.WriteFile(testFile, []byte("package test\nvar X = 1"), 0644); err != nil {
 		t.Fatalf("Erro ao criar arquivo de teste: %v", err)
 	}
 
@@ -356,12 +363,49 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 		t.Fatalf("Erro ao criar diretório docs: %v", err)
 	}
 
+	// Criar todos os diretórios necessários
+	diretorios := []string{
+		"cmd/flickly",
+		"internal/api/flickly",
+		"internal/api/users/controllers",
+		"internal/infra/crosscutting/swagger",
+		"internal/domain/users/commands",
+		"internal/domain/users/entities",
+		"internal/api/users/viewmodels",
+		"internal/domain/core",
+		"internal/api",
+	}
+
+	for _, dir := range diretorios {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			t.Fatalf("Erro ao criar diretório %s: %v", dir, err)
+		}
+	}
+
+	// Criar arquivos principais com conteúdo mínimo
+	arquivos := map[string]string{
+		"cmd/flickly/main.go":                                   "package main\nfunc main(){}",
+		"internal/api/flickly/router.go":                        "package flickly\nfunc Startup(){}",
+		"internal/api/users/controllers/user_controller.go":     "package controllers\nfunc NewUserController(){}",
+		"internal/infra/crosscutting/swagger/swagger_config.go": "package swagger\nfunc SetupSwagger(){}",
+	}
+
+	for path, content := range arquivos {
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			t.Fatalf("Erro ao criar arquivo %s: %v", path, err)
+		}
+	}
+
+	// Garantir que os arquivos sejam mais antigos que o swagger.json
+	time.Sleep(1100 * time.Millisecond)
+
 	// Teste 1: Swagger não existe
 	assert.True(t, isSwaggerDesatualizado(), "isSwaggerDesatualizado() deveria retornar true quando swagger.json não existe")
 
-	// Criar arquivo swagger.json antigo
+	// Criar arquivo swagger.json antigo (mas mais novo que os outros arquivos)
 	swaggerJson := `{"info":{"title":"Test API"}}`
-	if err := os.WriteFile("docs/swagger.json", []byte(swaggerJson), 0644); err != nil {
+	swaggerJsonPath := "docs/swagger.json"
+	if err := os.WriteFile(swaggerJsonPath, []byte(swaggerJson), 0644); err != nil {
 		t.Fatalf("Erro ao criar swagger.json: %v", err)
 	}
 
@@ -370,7 +414,7 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 
 	// Criar arquivo mais recente que o swagger.json
 	time.Sleep(time.Second) // Garantir que o arquivo será mais recente
-	if err := os.WriteFile("test.go", []byte("package test"), 0644); err != nil {
+	if err := os.WriteFile("internal/api/test.go", []byte("package test"), 0644); err != nil {
 		t.Fatalf("Erro ao criar arquivo de teste: %v", err)
 	}
 
