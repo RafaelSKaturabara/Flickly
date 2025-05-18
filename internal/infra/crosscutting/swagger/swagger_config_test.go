@@ -7,23 +7,130 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+// MockGinEngine é um mock para o gin.Engine
+type MockGinEngine struct {
+	mock.Mock
+}
+
+func (m *MockGinEngine) GET(relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes {
+	args := m.Called(relativePath, handlers)
+	return args.Get(0).(gin.IRoutes)
+}
+
+// helper para saber se está no diretório raiz do projeto
+func isRootProjectDir() bool {
+	if _, err := os.Stat("go.mod"); err != nil {
+		return false
+	}
+	if _, err := os.Stat("cmd/flickly/main.go"); err != nil {
+		return false
+	}
+	return true
+}
 
 // TestSetupSwagger testa a configuração do Swagger no Gin
 func TestSetupSwagger(t *testing.T) {
-	// Este teste requer acesso ao comando swag e ao arquivo main.go
-	// Só deve ser executado no diretório raiz do projeto
-	// Pulamos o teste em ambientes isolados
-	t.Skip("Pulando teste que requer acesso ao diretório raiz do projeto")
+	if !isRootProjectDir() {
+		t.Skip("Pulando teste que requer estrutura do projeto e comando swag")
+	}
+	// Criar diretório temporário para testes
+	tempDir, err := os.MkdirTemp("", "swagger_test_*")
+	if err != nil {
+		t.Fatalf("Erro ao criar diretório temporário: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Mudar para o diretório temporário
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Erro ao obter diretório atual: %v", err)
+	}
+	defer os.Chdir(originalDir)
+
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
+	}
+
+	// Criar diretório docs
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório docs: %v", err)
+	}
+
+	// Criar um gin.Engine real
+	engine := gin.New()
+
+	// Testar SetupSwagger
+	SetupSwagger(engine)
+
+	// Verificar se o diretório docs foi criado
+	if !fileExists("docs") {
+		t.Error("Diretório docs não foi criado")
+	}
+
+	// Verificar se os arquivos do Swagger foram gerados
+	arquivosEsperados := []string{"docs/docs.go", "docs/swagger.json", "docs/swagger.yaml"}
+	for _, arquivo := range arquivosEsperados {
+		if !fileExists(arquivo) {
+			t.Errorf("Arquivo %s não foi gerado", arquivo)
+		}
+	}
+
+	// Verificar se a rota /swagger/*any foi registrada
+	found := false
+	for _, route := range engine.Routes() {
+		if route.Path == "/swagger/*any" && route.Method == "GET" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Error("Rota /swagger/*any não foi registrada no gin.Engine")
+	}
 }
 
 // TestRegenerarSwagger testa a função regenerarSwagger
 func TestRegenerarSwagger(t *testing.T) {
-	// Este teste requer acesso ao comando swag e ao arquivo main.go
-	// Só deve ser executado no diretório raiz do projeto
-	// Pulamos o teste em ambientes isolados
-	t.Skip("Pulando teste que requer acesso ao diretório raiz do projeto")
+	if !isRootProjectDir() {
+		t.Skip("Pulando teste que requer estrutura do projeto e comando swag")
+	}
+	// Criar diretório temporário para testes
+	tempDir, err := os.MkdirTemp("", "swagger_test_*")
+	if err != nil {
+		t.Fatalf("Erro ao criar diretório temporário: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Mudar para o diretório temporário
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Erro ao obter diretório atual: %v", err)
+	}
+	defer os.Chdir(originalDir)
+
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
+	}
+
+	// Criar diretório docs
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório docs: %v", err)
+	}
+
+	// Testar regenerarSwagger
+	regenerarSwagger()
+
+	// Verificar se os arquivos do Swagger foram gerados
+	arquivosEsperados := []string{"docs/docs.go", "docs/swagger.json", "docs/swagger.yaml"}
+	for _, arquivo := range arquivosEsperados {
+		if !fileExists(arquivo) {
+			t.Errorf("Arquivo %s não foi gerado", arquivo)
+		}
+	}
 }
 
 func TestFileExists(t *testing.T) {
@@ -122,7 +229,9 @@ func TestAdicionarTimestampNoJSON(t *testing.T) {
 
 	// Verificar se o timestamp foi atualizado (não duplicado)
 	conteudoAtualizado, _ = os.ReadFile(tmpFile.Name())
-	json.Unmarshal(conteudoAtualizado, &jsonData)
+	if err := json.Unmarshal(conteudoAtualizado, &jsonData); err != nil {
+		t.Fatalf("Erro ao fazer parse do JSON atualizado (segundo teste): %v", err)
+	}
 	info = jsonData["info"].(map[string]interface{})
 	desc = info["description"].(string)
 
@@ -147,51 +256,42 @@ func TestGerarHashTipos(t *testing.T) {
 }
 
 func TestVerificarTiposAlterados(t *testing.T) {
-	// Salvar o arquivo original para restaurá-lo depois
-	hashFile := "docs/types_hash.txt"
-	var conteudoOriginal []byte
-	var existiaArquivo bool
+	// Criar diretório temporário para testes
+	tempDir, err := os.MkdirTemp("", "swagger_test_*")
+	if err != nil {
+		t.Fatalf("Erro ao criar diretório temporário: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
 
-	if fileExists(hashFile) {
-		existiaArquivo = true
-		var err error
-		conteudoOriginal, err = os.ReadFile(hashFile)
-		if err != nil {
-			t.Fatalf("Erro ao ler arquivo de hash original: %v", err)
-		}
+	// Mudar para o diretório temporário
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Erro ao obter diretório atual: %v", err)
+	}
+	defer os.Chdir(originalDir)
+
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
 	}
 
-	// Garante que o diretório docs existe
-	os.MkdirAll("docs", 0755)
-
-	// Limpar após o teste
-	defer func() {
-		if existiaArquivo {
-			// Restaurar o arquivo original
-			os.WriteFile(hashFile, conteudoOriginal, 0644)
-		} else {
-			// Remover o arquivo se não existia antes
-			os.Remove(hashFile)
-		}
-	}()
-
-	// Teste 1: Remover o arquivo para forçar detecção de mudança
-	os.Remove(hashFile)
-	if !verificarTiposAlterados() {
-		t.Error("verificarTiposAlterados() deveria retornar true quando o arquivo de hash não existe")
+	// Criar diretório docs
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório docs: %v", err)
 	}
 
-	// Teste 2: Segunda chamada deve retornar false, pois o hash acabou de ser salvo
-	if verificarTiposAlterados() {
-		t.Error("verificarTiposAlterados() deveria retornar false na segunda chamada consecutiva")
+	// Teste 1: Primeira execução (arquivo de hash não existe)
+	assert.True(t, verificarTiposAlterados(), "verificarTiposAlterados() deveria retornar true na primeira execução")
+
+	// Teste 2: Segunda execução (hash não mudou)
+	assert.False(t, verificarTiposAlterados(), "verificarTiposAlterados() deveria retornar false quando o hash não mudou")
+
+	// Criar arquivo de teste para alterar o hash
+	if err := os.WriteFile("test.go", []byte("package test"), 0644); err != nil {
+		t.Fatalf("Erro ao criar arquivo de teste: %v", err)
 	}
 
-	// Teste 3: Alterar o hash manualmente para forçar detecção de mudança
-	hashInvalido := "hash_invalido_para_teste"
-	os.WriteFile(hashFile, []byte(hashInvalido), 0644)
-	if !verificarTiposAlterados() {
-		t.Error("verificarTiposAlterados() deveria retornar true quando o hash armazenado é diferente")
-	}
+	// Teste 3: Hash alterado
+	assert.True(t, verificarTiposAlterados(), "verificarTiposAlterados() deveria retornar true quando o hash mudou")
 }
 
 func TestDiretorioModificadoDepois(t *testing.T) {
@@ -211,7 +311,9 @@ func TestDiretorioModificadoDepois(t *testing.T) {
 
 	// Caso 2: Adicionar um arquivo .go mais recente
 	arquivoGo := filepath.Join(tempDir, "teste.go")
-	os.WriteFile(arquivoGo, []byte("package teste"), 0644)
+	if err := os.WriteFile(arquivoGo, []byte("package teste"), 0644); err != nil {
+		t.Fatalf("Erro ao escrever arquivo de teste: %v", err)
+	}
 
 	resultado = diretorioModificadoDepois(tempDir, tempoReferencia)
 	assert.True(t, resultado, "diretorioModificadoDepois() deve retornar true para diretório com arquivo .go recente")
@@ -231,39 +333,49 @@ func TestDiretorioModificadoDepois(t *testing.T) {
 }
 
 func TestIsSwaggerDesatualizado(t *testing.T) {
-	// Este teste é mais complexo, pois envolve vários arquivos
-	// Vamos testar apenas o caso em que o arquivo swagger.json não existe
+	// Criar diretório temporário para testes
+	tempDir, err := os.MkdirTemp("", "swagger_test_*")
+	if err != nil {
+		t.Fatalf("Erro ao criar diretório temporário: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
 
-	// Salvar o estado original
-	swaggerJsonPath := "docs/swagger.json"
-	var swaggerJsonExiste bool
-	var swaggerJsonConteudo []byte
+	// Mudar para o diretório temporário
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Erro ao obter diretório atual: %v", err)
+	}
+	defer os.Chdir(originalDir)
 
-	if fileExists(swaggerJsonPath) {
-		swaggerJsonExiste = true
-		var err error
-		swaggerJsonConteudo, err = os.ReadFile(swaggerJsonPath)
-		if err != nil {
-			t.Fatalf("Erro ao ler swagger.json original: %v", err)
-		}
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("Erro ao mudar para diretório temporário: %v", err)
 	}
 
-	// Limpar após o teste
-	defer func() {
-		if swaggerJsonExiste {
-			os.WriteFile(swaggerJsonPath, swaggerJsonConteudo, 0644)
-		} else {
-			os.Remove(swaggerJsonPath)
-		}
-	}()
-
-	// Remover o arquivo swagger.json para testar
-	os.Remove(swaggerJsonPath)
-
-	// Testar se detecta corretamente que está desatualizado
-	if !isSwaggerDesatualizado() {
-		t.Error("isSwaggerDesatualizado() deveria retornar true quando swagger.json não existe")
+	// Criar diretório docs
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório docs: %v", err)
 	}
+
+	// Teste 1: Swagger não existe
+	assert.True(t, isSwaggerDesatualizado(), "isSwaggerDesatualizado() deveria retornar true quando swagger.json não existe")
+
+	// Criar arquivo swagger.json antigo
+	swaggerJson := `{"info":{"title":"Test API"}}`
+	if err := os.WriteFile("docs/swagger.json", []byte(swaggerJson), 0644); err != nil {
+		t.Fatalf("Erro ao criar swagger.json: %v", err)
+	}
+
+	// Teste 2: Swagger existe e está atualizado
+	assert.False(t, isSwaggerDesatualizado(), "isSwaggerDesatualizado() deveria retornar false quando swagger.json está atualizado")
+
+	// Criar arquivo mais recente que o swagger.json
+	time.Sleep(time.Second) // Garantir que o arquivo será mais recente
+	if err := os.WriteFile("test.go", []byte("package test"), 0644); err != nil {
+		t.Fatalf("Erro ao criar arquivo de teste: %v", err)
+	}
+
+	// Teste 3: Arquivo mais recente que o swagger.json
+	assert.True(t, isSwaggerDesatualizado(), "isSwaggerDesatualizado() deveria retornar true quando há arquivos mais recentes que swagger.json")
 }
 
 // TestAbrirNavegador testa a função abrirNavegador
@@ -286,7 +398,9 @@ func TestVerificarSwaggerExistente(t *testing.T) {
 
 	// Teste com docs/swagger.json existente
 	// Primeiro, garantir que o diretório docs existe
-	os.MkdirAll("docs", 0755)
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		t.Fatalf("Erro ao criar diretório docs: %v", err)
+	}
 
 	// Criar um arquivo swagger.json de teste
 	swaggerJsonPath := "docs/swagger.json"
@@ -308,14 +422,18 @@ func TestVerificarSwaggerExistente(t *testing.T) {
 	// Limpar após o teste
 	defer func() {
 		if swaggerJsonExiste {
-			os.WriteFile(swaggerJsonPath, swaggerJsonConteudo, 0644)
+			if err := os.WriteFile(swaggerJsonPath, swaggerJsonConteudo, 0644); err != nil {
+				t.Logf("Erro ao restaurar arquivo original: %v", err)
+			}
 		} else {
 			os.Remove(swaggerJsonPath)
 		}
 	}()
 
 	// Escrever arquivo de teste
-	os.WriteFile(swaggerJsonPath, []byte(jsonConteudo), 0644)
+	if err := os.WriteFile(swaggerJsonPath, []byte(jsonConteudo), 0644); err != nil {
+		t.Fatalf("Erro ao escrever arquivo de teste: %v", err)
+	}
 
 	// Testar função - não deve causar pânico com arquivo existente
 	verificarSwaggerExistente()

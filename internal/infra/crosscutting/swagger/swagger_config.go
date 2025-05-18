@@ -23,7 +23,9 @@ func SetupSwagger(router *gin.Engine) {
 	// SEMPRE forçar regeneração do Swagger para garantir que está atualizado
 	fmt.Println("\033[33mRemovendo documentação Swagger existente...\033[0m")
 	os.RemoveAll("docs")
-	os.MkdirAll("docs", 0755)
+	if err := os.MkdirAll("docs", 0755); err != nil {
+		fmt.Printf("\033[31mErro ao criar diretório docs: %v\033[0m\n", err)
+	}
 
 	// Forçar regeneração do Swagger
 	fmt.Println("\033[33mRegenerando documentação Swagger...\033[0m")
@@ -312,7 +314,7 @@ func gerarHashTipos() string {
 
 	// Percorrer todos os diretórios relevantes
 	for _, dir := range diretoriosChave {
-		filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return nil // Ignorar erros
 			}
@@ -328,7 +330,9 @@ func gerarHashTipos() string {
 				hasher.Write(conteudo)
 			}
 			return nil
-		})
+		}); err != nil {
+			fmt.Printf("\033[33mAviso ao processar diretório %s: %v\033[0m\n", dir, err)
+		}
 	}
 
 	// Gerar hash em formato hexadecimal
@@ -353,7 +357,9 @@ func verificarTiposAlterados() bool {
 
 	// Se o hash mudou, atualizar o arquivo e retornar true
 	if hashAnterior != hashAtual {
-		os.WriteFile(hashFile, []byte(hashAtual), 0644)
+		if err := os.WriteFile(hashFile, []byte(hashAtual), 0644); err != nil {
+			fmt.Printf("\033[31mErro ao salvar hash de tipos: %v\033[0m\n", err)
+		}
 		return true
 	}
 
