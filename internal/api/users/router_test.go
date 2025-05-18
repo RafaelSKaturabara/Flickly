@@ -4,7 +4,7 @@ import (
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -35,17 +35,17 @@ func TestStartup(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	serviceCollection := utilities.NewServiceCollection()
-	
+
 	// Registrar as dependências necessárias
 	utilities.AddService[mediator.Mediator](serviceCollection, &MockMediatorForRouterTest{})
 	utilities.AddService[repositories.IUserRepository](serviceCollection, &MockUserRepositoryForRouterTest{})
-	
+
 	// Execução
 	Startup(router, serviceCollection)
-	
+
 	// Verificações
 	routes := router.Routes()
-	
+
 	// Verificar se as rotas foram registradas
 	var foundPostUser, foundPostOauthToken bool
 	for _, route := range routes {
@@ -56,7 +56,7 @@ func TestStartup(t *testing.T) {
 			foundPostOauthToken = true
 		}
 	}
-	
+
 	assert.True(t, foundPostUser, "A rota POST /user deve estar registrada")
 	assert.True(t, foundPostOauthToken, "A rota POST /oauth/token deve estar registrada")
-} 
+}

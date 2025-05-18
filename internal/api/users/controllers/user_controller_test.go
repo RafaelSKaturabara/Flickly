@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	viewmodels "flickly/internal/api/users/view-models"
+	viewmodels "flickly/internal/api/users/viewmodels"
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/commands"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -88,11 +88,11 @@ func TestPostUser_Success(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	
+
 	// Criar corpo da requisição
 	createUserCommand := commands.CreateUserCommand{
 		Name:  "Test User",
@@ -108,7 +108,7 @@ func TestPostUser_Success(t *testing.T) {
 	// Verificações
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status deve ser 200 OK")
 	assert.True(t, mockMediator.SendCalled, "O método Send do mediator deve ser chamado")
-	
+
 	// Verificar o corpo da resposta
 	var response entities.User
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -125,7 +125,7 @@ func TestPostUser_BindError(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder com JSON inválido
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -151,11 +151,11 @@ func TestPostUser_MediatorError(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	
+
 	// Criar corpo da requisição
 	createUserCommand := commands.CreateUserCommand{
 		Name:  "Test User",
@@ -183,11 +183,11 @@ func TestPostOauthToken_Success(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	
+
 	// Criar dados de formulário para a requisição OAuth
 	form := url.Values{}
 	form.Add("grant_type", "password")
@@ -195,7 +195,7 @@ func TestPostOauthToken_Success(t *testing.T) {
 	form.Add("client_secret", "my_client_secret")
 	form.Add("username", "test@example.com")
 	form.Add("password", "password123")
-	
+
 	c.Request = httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(form.Encode()))
 	c.Request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -205,7 +205,7 @@ func TestPostOauthToken_Success(t *testing.T) {
 	// Verificações
 	assert.Equal(t, http.StatusOK, w.Code, "O código de status deve ser 200 OK")
 	assert.True(t, mockRepo.GetUserByEmailCalled, "O método GetUserByEmail do repositório deve ser chamado")
-	
+
 	// Verificar o corpo da resposta
 	var response viewmodels.TokenResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -225,11 +225,11 @@ func TestPostOauthToken_InvalidCredentials(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	
+
 	// Criar dados de formulário para a requisição OAuth com credenciais inválidas
 	form := url.Values{}
 	form.Add("grant_type", "password")
@@ -237,7 +237,7 @@ func TestPostOauthToken_InvalidCredentials(t *testing.T) {
 	form.Add("client_secret", "my_client_secret")
 	form.Add("username", "test@example.com")
 	form.Add("password", "password123")
-	
+
 	c.Request = httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(form.Encode()))
 	c.Request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -246,7 +246,7 @@ func TestPostOauthToken_InvalidCredentials(t *testing.T) {
 
 	// Verificações
 	assert.Equal(t, http.StatusUnauthorized, w.Code, "O código de status deve ser 401 Unauthorized")
-	
+
 	// Verificar o corpo da resposta
 	var response map[string]string
 	err := json.Unmarshal(w.Body.Bytes(), &response)
@@ -265,11 +265,11 @@ func TestPostOauthToken_RepositoryError(t *testing.T) {
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo)
 
 	controller := NewUserController(serviceCollection)
-	
+
 	// Criar request e response recorder
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	
+
 	// Criar dados de formulário para a requisição OAuth
 	form := url.Values{}
 	form.Add("grant_type", "password")
@@ -277,7 +277,7 @@ func TestPostOauthToken_RepositoryError(t *testing.T) {
 	form.Add("client_secret", "my_client_secret")
 	form.Add("username", "test@example.com")
 	form.Add("password", "password123")
-	
+
 	c.Request = httptest.NewRequest(http.MethodPost, "/oauth/token", strings.NewReader(form.Encode()))
 	c.Request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -287,4 +287,4 @@ func TestPostOauthToken_RepositoryError(t *testing.T) {
 	// Verificações
 	assert.Equal(t, http.StatusUnauthorized, w.Code, "O código de status deve ser 401 Unauthorized")
 	assert.True(t, mockRepo.GetUserByEmailCalled, "O método GetUserByEmail do repositório deve ser chamado")
-} 
+}

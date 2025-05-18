@@ -5,14 +5,14 @@ import (
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
-	inversionofcontrol "flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 )
 
 type CreateUserCommand struct {
-	mediator.Request
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Emai1l string `json:"emai1l"`
 }
 
 type CreateUserCommandHandler struct {
@@ -20,10 +20,10 @@ type CreateUserCommandHandler struct {
 	userRepository repositories.IUserRepository
 }
 
-func NewCreateUserCommandHandler(serviceCollection inversionofcontrol.IServiceCollection) *CreateUserCommandHandler {
+func NewCreateUserCommandHandler(serviceCollection utilities.IServiceCollection) *CreateUserCommandHandler {
 	return &CreateUserCommandHandler{
-		mediator:       inversionofcontrol.GetService[mediator.Mediator](serviceCollection),
-		userRepository: inversionofcontrol.GetService[repositories.IUserRepository](serviceCollection),
+		mediator:       utilities.GetService[mediator.Mediator](serviceCollection),
+		userRepository: utilities.GetService[repositories.IUserRepository](serviceCollection),
 	}
 }
 

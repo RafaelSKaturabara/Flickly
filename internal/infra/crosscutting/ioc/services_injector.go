@@ -1,15 +1,15 @@
-package inversion_of_control
+package ioc
 
 import (
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/cross-cutting/utilities"
-	infraRepositories "flickly/internal/infra/data/users/repositories"
+	"flickly/internal/infra/crosscutting/utilities"
+	infrarepositories "flickly/internal/infra/data/users/repositories"
 )
 
 func InjectServices(serviceCollection utilities.IServiceCollection) {
 	mediatR := mediator.NewMediatR()
 
 	utilities.AddService[mediator.Mediator](serviceCollection, mediatR)
-	utilities.AddService[repositories.IUserRepository](serviceCollection, infraRepositories.NewUserRepository())
+	utilities.AddService[repositories.IUserRepository](serviceCollection, infrarepositories.NewUserRepository())
 }

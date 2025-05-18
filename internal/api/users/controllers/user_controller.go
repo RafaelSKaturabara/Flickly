@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	viewmodels "flickly/internal/api/users/view-models"
+	viewmodels "flickly/internal/api/users/viewmodels"
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/commands"
 	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -23,6 +23,16 @@ func NewUserController(collection utilities.IServiceCollection) *UserController 
 	}
 }
 
+// PostUser cria um novo usuário
+// @Summary Criar um novo usuário
+// @Description Cria um novo usuário com base nos dados fornecidos
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body commands.CreateUserCommand true "Dados do usuário"
+// @Success 200 {object} interface{}
+// @Failure 400 {object} interface{}
+// @Router /user [post]
 func (u *UserController) PostUser(c *gin.Context) {
 	var createUserCommand commands.CreateUserCommand
 
@@ -41,6 +51,20 @@ func (u *UserController) PostUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// PostOauthToken autentica um usuário e gera um token
+// @Summary Gerar token de autenticação
+// @Description Autentica um usuário e retorna um token de acesso
+// @Tags auth
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Param grant_type formData string true "Tipo de concessão (password)"
+// @Param client_id formData string true "ID do cliente"
+// @Param client_secret formData string true "Segredo do cliente"
+// @Param username formData string true "E-mail do usuário"
+// @Param password formData string true "Senha do usuário"
+// @Success 200 {object} viewmodels.TokenResponse
+// @Failure 401 {object} object
+// @Router /oauth/token [post]
 func (u *UserController) PostOauthToken(c *gin.Context) {
 	grantType := c.PostForm("grant_type")
 	clientID := c.PostForm("client_id")

@@ -2,7 +2,7 @@ package users
 
 import (
 	"flickly/internal/api/users/controllers"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 )
 

@@ -2,7 +2,7 @@ package mediator
 
 import (
 	"errors"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 )
 

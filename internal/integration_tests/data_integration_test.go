@@ -4,8 +4,8 @@ import (
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
-	inversionofcontrol "flickly/internal/infra/cross-cutting/inversion-of-control"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/ioc"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -22,13 +22,13 @@ type DataIntegrationTestSuite struct {
 func (suite *DataIntegrationTestSuite) SetupSuite() {
 	// Inicializar o service collection
 	serviceCollection := utilities.NewServiceCollection()
-	
+
 	// Injetar serviços reais (não mocks)
-	inversionofcontrol.InjectServices(serviceCollection)
-	
+	ioc.InjectServices(serviceCollection)
+
 	// Obter o repositório de usuários
 	userRepository := utilities.GetService[repositories.IUserRepository](serviceCollection)
-	
+
 	suite.serviceCollection = serviceCollection
 	suite.userRepository = userRepository
 }
@@ -38,11 +38,11 @@ func (suite *DataIntegrationTestSuite) TestUserRepositoryOperations() {
 	// Criar um usuário de teste
 	email := "integracao@example.com"
 	user := entities.NewUser("Usuário Integração", email)
-	
+
 	// Salvar o usuário
 	err := suite.userRepository.CreateUser(user)
 	assert.NoError(suite.T(), err)
-	
+
 	// Recuperar o usuário pelo email
 	retrievedUser, err := suite.userRepository.GetUserByEmail(email)
 	assert.NoError(suite.T(), err)
@@ -55,11 +55,11 @@ func (suite *DataIntegrationTestSuite) TestUserRepositoryOperations() {
 func (suite *DataIntegrationTestSuite) TestMediatorIntegration() {
 	// Este teste verifica a integração entre o mediator e os handlers registrados
 	// Esta é uma parte crucial da arquitetura do aplicativo
-	
+
 	// Verificar se o mediator foi configurado corretamente
 	mediator := utilities.GetService[mediator.Mediator](suite.serviceCollection)
 	assert.NotNil(suite.T(), mediator)
-	
+
 	// Os detalhes específicos deste teste dependerão da implementação do mediator
 	// e dos handlers registrados no seu aplicativo
 }
@@ -70,4 +70,4 @@ func TestRunDataSuite(t *testing.T) {
 		t.Skip("Pulando testes de integração em modo curto")
 	}
 	suite.Run(t, new(DataIntegrationTestSuite))
-} 
+}

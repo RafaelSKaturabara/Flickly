@@ -58,3 +58,10 @@ _cgo_export.*
 main
 
 code_quality_service
+
+# Swagger files gerados automaticamente
+/docs/
+/docs/docs.go
+/docs/swagger.json
+/docs/swagger.yaml
+/docs/types_hash.txt

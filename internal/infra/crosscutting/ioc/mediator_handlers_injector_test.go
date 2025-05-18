@@ -1,10 +1,10 @@
-package inversion_of_control
+package ioc
 
 import (
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/cross-cutting/utilities"
+	"flickly/internal/infra/crosscutting/utilities"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -45,17 +45,17 @@ func TestInjectMediatorHandlers(t *testing.T) {
 	serviceCollection := utilities.NewServiceCollection()
 	mockMediator := NewMockMediatorForTest()
 	mockUserRepo := &MockUserRepositoryForTest{}
-	
+
 	// Registrar o mediator mock e o repositório necessário para os handlers
 	utilities.AddService[mediator.Mediator](serviceCollection, mockMediator)
 	utilities.AddService[repositories.IUserRepository](serviceCollection, mockUserRepo)
-	
+
 	// Execução
 	InjectMediatorHandlers(serviceCollection)
-	
+
 	// Verificações
 	// Verificar se o handler do CreateUserCommand foi registrado
 	handler, exists := mockMediator.RegisteredHandlers["CreateUserCommand"]
 	assert.True(t, exists, "O handler de CreateUserCommand deve ser registrado")
 	assert.NotNil(t, handler, "O handler registrado não deve ser nulo")
-} 
+}
