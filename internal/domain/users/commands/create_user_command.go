@@ -6,13 +6,15 @@ import (
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
 	"flickly/internal/infra/crosscutting/utilities"
+
 	"github.com/gin-gonic/gin"
 )
 
 type CreateUserCommand struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Provider   string `json:"provider"`
+	ProviderID string `json:"provider_id"`
 }
 
 type CreateUserCommandHandler struct {
@@ -29,8 +31,8 @@ func NewCreateUserCommandHandler(serviceCollection utilities.IServiceCollection)
 
 func (h *CreateUserCommandHandler) Handle(c *gin.Context, request mediator.Request) (mediator.Response, error) {
 	command := request.(CreateUserCommand)
-	user := entities.NewUser(command.Name, command.Email)
-	err := h.userRepository.CreateUser(user)
+	user := entities.NewUser(command.Name, command.Email, command.Provider, command.ProviderID)
+	err := h.userRepository.CreateUser(c.Request.Context(), user)
 	if err != nil {
 		return nil, core.ErrUserAlreadyExist(err)
 	}

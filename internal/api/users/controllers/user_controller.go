@@ -8,8 +8,9 @@ import (
 	"flickly/internal/domain/users/commands"
 	"flickly/internal/domain/users/repositories"
 	"flickly/internal/infra/crosscutting/utilities"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
@@ -90,7 +91,7 @@ func (u *UserController) PostOauthToken(c *gin.Context) {
 		// Aqui você deve implementar a lógica para verificar as credenciais
 		if grantType == "password" && clientID == "my_client_id" && clientSecret == "my_client_secret" {
 
-			user, err := u.userRepository.GetUserByEmail(username)
+			user, err := u.userRepository.GetUserByEmail(c.Request.Context(), username)
 
 			if err != nil {
 				return nil, err

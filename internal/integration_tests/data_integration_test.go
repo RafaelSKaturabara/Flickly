@@ -1,14 +1,16 @@
 package integration_tests
 
 import (
+	"context"
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
 	"flickly/internal/infra/crosscutting/ioc"
 	"flickly/internal/infra/crosscutting/utilities"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 // DataIntegrationTestSuite define a suite de testes para a camada de dados
@@ -37,14 +39,14 @@ func (suite *DataIntegrationTestSuite) SetupSuite() {
 func (suite *DataIntegrationTestSuite) TestUserRepositoryOperations() {
 	// Criar um usuário de teste
 	email := "integracao@example.com"
-	user := entities.NewUser("Usuário Integração", email)
+	user := entities.NewUser("Usuário Integração", email, "google", "123456789")
 
 	// Salvar o usuário
-	err := suite.userRepository.CreateUser(user)
+	err := suite.userRepository.CreateUser(context.Background(), user)
 	assert.NoError(suite.T(), err)
 
 	// Recuperar o usuário pelo email
-	retrievedUser, err := suite.userRepository.GetUserByEmail(email)
+	retrievedUser, err := suite.userRepository.GetUserByEmail(context.Background(), email)
 	assert.NoError(suite.T(), err)
 	assert.NotNil(suite.T(), retrievedUser)
 	assert.Equal(suite.T(), user.Name, retrievedUser.Name)
