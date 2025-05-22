@@ -1,33 +1,74 @@
 package users
 
 import (
+	"context"
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
 	"flickly/internal/infra/crosscutting/utilities"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"reflect"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 // MockMediatorForRouterTest é um mock do mediator para testes do roteador
-type MockMediatorForRouterTest struct{}
+type MockMediatorForRouterTest struct {
+	RegisteredHandlers map[string]mediator.Handler
+}
 
-func (m *MockMediatorForRouterTest) Register(requestName string, handler mediator.Handler) {}
+func NewMockMediatorForRouterTest() *MockMediatorForRouterTest {
+	return &MockMediatorForRouterTest{
+		RegisteredHandlers: make(map[string]mediator.Handler),
+	}
+}
+
+func (m *MockMediatorForRouterTest) Register(requestName string, handler mediator.Handler) {
+	m.RegisteredHandlers[requestName] = handler
+}
 
 func (m *MockMediatorForRouterTest) Send(c *gin.Context, request mediator.Request) (mediator.Response, error) {
+	if handler, exists := m.RegisteredHandlers[reflect.TypeOf(request).Name()]; exists {
+		return handler.Handle(c, request)
+	}
 	return nil, nil
 }
 
 // MockUserRepositoryForRouterTest é um mock do repositório de usuários para testes
 type MockUserRepositoryForRouterTest struct{}
 
-func (m *MockUserRepositoryForRouterTest) CreateUser(user *entities.User) error {
+func (m *MockUserRepositoryForRouterTest) CreateUser(ctx context.Context, user *entities.User) error {
 	return nil
 }
 
-func (m *MockUserRepositoryForRouterTest) GetUserByEmail(email string) (*entities.User, error) {
+func (m *MockUserRepositoryForRouterTest) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 	return nil, nil
+}
+
+func (m *MockUserRepositoryForRouterTest) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.User, error) {
+	return nil, nil
+}
+
+func (m *MockUserRepositoryForRouterTest) UpdateUser(ctx context.Context, user *entities.User) error {
+	return nil
+}
+
+func (m *MockUserRepositoryForRouterTest) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	return nil
+}
+
+func (m *MockUserRepositoryForRouterTest) GetUserByProviderID(ctx context.Context, provider, providerID string) (*entities.User, error) {
+	return nil, nil
+}
+
+func (m *MockUserRepositoryForRouterTest) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UUID, accessToken, refreshToken string, tokenExpiry int64, scopes []string) error {
+	return nil
+}
+
+func (m *MockUserRepositoryForRouterTest) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []string) error {
+	return nil
 }
 
 func TestStartup(t *testing.T) {
@@ -37,7 +78,7 @@ func TestStartup(t *testing.T) {
 	serviceCollection := utilities.NewServiceCollection()
 
 	// Registrar as dependências necessárias
-	utilities.AddService[mediator.Mediator](serviceCollection, &MockMediatorForRouterTest{})
+	utilities.AddService[mediator.Mediator](serviceCollection, NewMockMediatorForRouterTest())
 	utilities.AddService[repositories.IUserRepository](serviceCollection, &MockUserRepositoryForRouterTest{})
 
 	// Execução

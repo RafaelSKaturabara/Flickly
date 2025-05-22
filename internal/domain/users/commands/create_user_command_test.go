@@ -1,15 +1,20 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"flickly/internal/domain/core"
 	"flickly/internal/domain/core/mediator"
 	"flickly/internal/domain/users/entities"
 	"flickly/internal/domain/users/repositories"
 	"flickly/internal/infra/crosscutting/utilities"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"net/http/httptest"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 // MockUserRepository é um mock do repositório de usuários para os testes
@@ -19,13 +24,37 @@ type MockUserRepository struct {
 	ErrorToReturn    error
 }
 
-func (m *MockUserRepository) CreateUser(user *entities.User) error {
+func (m *MockUserRepository) CreateUser(ctx context.Context, user *entities.User) error {
 	m.CreateUserCalled = true
 	return m.ErrorToReturn
 }
 
-func (m *MockUserRepository) GetUserByEmail(email string) (*entities.User, error) {
+func (m *MockUserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.User, error) {
+	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepository) UpdateUser(ctx context.Context, user *entities.User) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepository) GetUserByProviderID(ctx context.Context, provider, providerID string) (*entities.User, error) {
+	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepository) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UUID, accessToken, refreshToken string, tokenExpiry int64, scopes []string) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepository) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []string) error {
+	return m.ErrorToReturn
 }
 
 // MockMediator é um mock do mediator para os testes
@@ -89,6 +118,7 @@ func TestHandle_Success(t *testing.T) {
 
 	// Execução
 	ginContext, _ := gin.CreateTestContext(nil)
+	ginContext.Request = httptest.NewRequest("POST", "/user", nil)
 	response, err := handler.Handle(ginContext, command)
 
 	// Verificações
@@ -120,6 +150,7 @@ func TestHandle_Error(t *testing.T) {
 
 	// Execução
 	ginContext, _ := gin.CreateTestContext(nil)
+	ginContext.Request = httptest.NewRequest("POST", "/user", nil)
 	response, err := handler.Handle(ginContext, command)
 
 	// Verificações

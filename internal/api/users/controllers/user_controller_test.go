@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	viewmodels "flickly/internal/api/users/viewmodels"
 	"flickly/internal/domain/core/mediator"
@@ -19,6 +20,7 @@ import (
 	"flickly/internal/domain/core"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +36,10 @@ func (m *MockMediatorForControllerTest) Register(requestName string, handler med
 
 func (m *MockMediatorForControllerTest) Send(c *gin.Context, request mediator.Request) (mediator.Response, error) {
 	m.SendCalled = true
-	return m.ResponseToReturn, m.ErrorToReturn
+	if m.ErrorToReturn != nil {
+		return nil, m.ErrorToReturn
+	}
+	return m.ResponseToReturn, nil
 }
 
 // MockUserRepositoryForControllerTest é um mock do repositório de usuários para testes
@@ -45,14 +50,38 @@ type MockUserRepositoryForControllerTest struct {
 	ErrorToReturn        error
 }
 
-func (m *MockUserRepositoryForControllerTest) CreateUser(user *entities.User) error {
+func (m *MockUserRepositoryForControllerTest) CreateUser(ctx context.Context, user *entities.User) error {
 	m.CreateUserCalled = true
 	return m.ErrorToReturn
 }
 
-func (m *MockUserRepositoryForControllerTest) GetUserByEmail(email string) (*entities.User, error) {
+func (m *MockUserRepositoryForControllerTest) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 	m.GetUserByEmailCalled = true
 	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.User, error) {
+	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) UpdateUser(ctx context.Context, user *entities.User) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) GetUserByProviderID(ctx context.Context, provider, providerID string) (*entities.User, error) {
+	return m.UserToReturn, m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UUID, accessToken, refreshToken string, tokenExpiry int64, scopes []string) error {
+	return m.ErrorToReturn
+}
+
+func (m *MockUserRepositoryForControllerTest) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []string) error {
+	return m.ErrorToReturn
 }
 
 // MockMapperForControllerTest é um mock do mapper para testes do controlador
@@ -118,7 +147,7 @@ func TestPostUser_Success(t *testing.T) {
 	// Configuração
 	gin.SetMode(gin.TestMode)
 	mockMediator := &MockMediatorForControllerTest{
-		ResponseToReturn: entities.NewUser("Test User", "test@example.com"),
+		ResponseToReturn: entities.NewUser("Test User", "test@example.com", "google", "123456789"),
 	}
 	mockRepo := &MockUserRepositoryForControllerTest{}
 	mockMapper := &MockMapperForControllerTest{}
@@ -224,7 +253,7 @@ func TestPostOauthToken_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockMediator := &MockMediatorForControllerTest{}
 	mockRepo := &MockUserRepositoryForControllerTest{
-		UserToReturn: entities.NewUser("Test User", "test@example.com"),
+		UserToReturn: entities.NewUser("Test User", "test@example.com", "google", "123456789"),
 	}
 	mockMapper := &MockMapperForControllerTest{}
 	serviceCollection := setupTestDependencies(mockMediator, mockRepo, mockMapper)
