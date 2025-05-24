@@ -2,7 +2,8 @@ package repositories
 
 import (
 	"context"
-	"flickly/internal/domain/users/entities"
+
+	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 
 	"github.com/google/uuid"
 )

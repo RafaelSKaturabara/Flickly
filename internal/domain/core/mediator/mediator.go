@@ -2,7 +2,9 @@ package mediator
 
 import (
 	"errors"
-	"flickly/internal/infra/crosscutting/utilities"
+
+	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+
 	"github.com/gin-gonic/gin"
 )
 

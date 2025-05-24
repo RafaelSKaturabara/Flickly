@@ -1,13 +1,12 @@
 package commands
 
 import (
-	"flickly/internal/domain/core"
-	"flickly/internal/domain/core/mediator"
-	"flickly/internal/domain/users/entities"
-	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/crosscutting/utilities"
-
 	"github.com/gin-gonic/gin"
+	"github.com/rkaturabara/flickly/internal/domain/core"
+	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
+	"github.com/rkaturabara/flickly/internal/domain/users/entities"
+	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
+	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
 type CreateUserCommand struct {

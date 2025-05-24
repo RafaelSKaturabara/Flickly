@@ -1,42 +1,42 @@
 package entities
 
 import (
-	"flickly/internal/domain/core"
+	"github.com/rkaturabara/flickly/internal/domain/core"
 )
 
 // User representa um usuário no sistema com suporte a OAuth2
 type User struct {
-	core.Entity
-	Name          string   `json:"name"`
+	core.BaseEntity
 	Email         string   `json:"email"`
-	GivenName     string   `json:"givenName,omitempty"`
-	FamilyName    string   `json:"familyName,omitempty"`
+	Name          string   `json:"name"`
+	Password      string   `json:"-"` // Senha não é serializada em JSON
+	GivenName     string   `json:"given_name,omitempty"`
+	FamilyName    string   `json:"family_name,omitempty"`
 	Picture       string   `json:"picture,omitempty"`
-	VerifiedEmail bool     `json:"verifiedEmail"`
-	Provider      string   `json:"provider"`   // Ex: "google", "github", etc
-	ProviderID    string   `json:"providerId"` // ID do usuário no provedor OAuth
+	VerifiedEmail bool     `json:"verified_email"`
+	Provider      string   `json:"provider,omitempty"`
+	ProviderID    string   `json:"provider_id,omitempty"`
 	Roles         []string `json:"roles"`
-	Scopes        []string `json:"scopes,omitempty"` // Escopos OAuth2 concedidos
-	AccessToken   string   `json:"accessToken,omitempty"`
-	RefreshToken  string   `json:"refreshToken,omitempty"`
-	TokenExpiry   int64    `json:"tokenExpiry,omitempty"`
+	AccessToken   string   `json:"-"`
+	RefreshToken  string   `json:"-"`
+	TokenExpiry   int64    `json:"-"`
+	TokenScopes   []string `json:"-"`
 }
 
 // NewUser cria uma nova instância de User
 func NewUser(name, email, provider, providerID string) *User {
 	return &User{
-		Entity:        core.NewEntity(),
-		Name:          name,
+		BaseEntity:    core.NewBaseEntity(),
 		Email:         email,
+		Name:          name,
 		Provider:      provider,
 		ProviderID:    providerID,
-		Roles:         []string{"user"}, // Role padrão
-		Scopes:        []string{},
+		Roles:         []string{"user"},
 		VerifiedEmail: false,
 	}
 }
 
-// HasRole verifica se o usuário possui um determinado role
+// HasRole verifica se o usuário possui uma determinada role
 func (u *User) HasRole(role string) bool {
 	for _, r := range u.Roles {
 		if r == role {
@@ -46,14 +46,14 @@ func (u *User) HasRole(role string) bool {
 	return false
 }
 
-// AddRole adiciona um novo role ao usuário
+// AddRole adiciona uma role ao usuário
 func (u *User) AddRole(role string) {
 	if !u.HasRole(role) {
 		u.Roles = append(u.Roles, role)
 	}
 }
 
-// RemoveRole remove um role do usuário
+// RemoveRole remove uma role do usuário
 func (u *User) RemoveRole(role string) {
 	for i, r := range u.Roles {
 		if r == role {
@@ -65,7 +65,7 @@ func (u *User) RemoveRole(role string) {
 
 // HasScope verifica se o usuário possui um determinado escopo
 func (u *User) HasScope(scope string) bool {
-	for _, s := range u.Scopes {
+	for _, s := range u.TokenScopes {
 		if s == scope {
 			return true
 		}
@@ -73,29 +73,29 @@ func (u *User) HasScope(scope string) bool {
 	return false
 }
 
-// AddScope adiciona um novo escopo ao usuário
+// AddScope adiciona um escopo ao usuário
 func (u *User) AddScope(scope string) {
 	if !u.HasScope(scope) {
-		u.Scopes = append(u.Scopes, scope)
+		u.TokenScopes = append(u.TokenScopes, scope)
 	}
 }
 
 // RemoveScope remove um escopo do usuário
 func (u *User) RemoveScope(scope string) {
-	for i, s := range u.Scopes {
+	for i, s := range u.TokenScopes {
 		if s == scope {
-			u.Scopes = append(u.Scopes[:i], u.Scopes[i+1:]...)
+			u.TokenScopes = append(u.TokenScopes[:i], u.TokenScopes[i+1:]...)
 			break
 		}
 	}
 }
 
-// UpdateOAuthInfo atualiza as informações do OAuth do usuário
+// UpdateOAuthInfo atualiza as informações de OAuth do usuário
 func (u *User) UpdateOAuthInfo(accessToken, refreshToken string, tokenExpiry int64, scopes []string) {
 	u.AccessToken = accessToken
 	u.RefreshToken = refreshToken
 	u.TokenExpiry = tokenExpiry
-	u.Scopes = scopes
+	u.TokenScopes = scopes
 }
 
 // UpdateProfile atualiza as informações do perfil do usuário
@@ -105,4 +105,12 @@ func (u *User) UpdateProfile(name, givenName, familyName, picture string, verifi
 	u.FamilyName = familyName
 	u.Picture = picture
 	u.VerifiedEmail = verifiedEmail
+}
+
+// GetFullName retorna o nome completo do usuário
+func (u *User) GetFullName() string {
+	if u.GivenName != "" && u.FamilyName != "" {
+		return u.GivenName + " " + u.FamilyName
+	}
+	return u.Name
 }

@@ -2,7 +2,7 @@
 
 # Variáveis
 BINARY_NAME=flickly
-MAIN_PATH=cmd/flickly/main.go
+MAIN_PATH=cmd/main.go
 GO_PATH=$(shell go env GOPATH)
 SWAG_PATH=$(shell which swag 2>/dev/null || echo "$(GOPATH)/bin/swag")
 DEBUG_BINARY_NAME=flickly-debug

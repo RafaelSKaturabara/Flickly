@@ -27,7 +27,7 @@ O projeto segue princípios de Domain-Driven Design (DDD), CQRS, SOLID, Clean Co
 
 - `internal/domain`: Entidades, agregados, value objects, interfaces de repositório.
 - `internal/infra`: Implementações técnicas (repositórios, serviços, crosscutting).
-- `cmd/flickly`: Ponto de entrada da aplicação (main.go).
+- `cmd`: Ponto de entrada da aplicação (main.go).
 - `internal/api`: Controllers, rotas, viewmodels.
 
 ---

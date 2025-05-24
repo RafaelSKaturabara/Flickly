@@ -17,7 +17,7 @@ skinparam package {
 
 ' Pacotes Principais - Visão Arquitetural
 package "Pontos de Entrada" as EntryPoints <<Entry>> {
-    [cmd/flickly/main.go] as Main
+    [cmd/main.go] as Main
 }
 
 package "Camada de API" as API <<API>> {

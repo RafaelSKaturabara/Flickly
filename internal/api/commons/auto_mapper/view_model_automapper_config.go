@@ -1,10 +1,11 @@
 package auto_mapper
 
 import (
-	"flickly/internal/api/commons/view_model"
-	"flickly/internal/domain/core"
-	"flickly/internal/infra/crosscutting/utilities"
 	"reflect"
+
+	"github.com/rkaturabara/flickly/internal/api/commons/view_model"
+	"github.com/rkaturabara/flickly/internal/domain/core"
+	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
 func ViewModelAutomapperConfig(serviceCollection utilities.IServiceCollection) {

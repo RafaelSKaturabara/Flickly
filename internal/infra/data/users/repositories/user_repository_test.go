@@ -2,9 +2,9 @@ package repositories
 
 import (
 	"context"
-	"flickly/internal/domain/users/entities"
 	"testing"
 
+	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 	"github.com/stretchr/testify/assert"
 )
 
