@@ -1,10 +1,11 @@
 package mediator
 
 import (
+	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // MockRequest implementa a interface Request para testes
@@ -24,7 +25,7 @@ type MockHandler struct {
 	ReturnError    error
 }
 
-func (h *MockHandler) Handle(c *gin.Context, request Request) (Response, error) {
+func (h *MockHandler) Handle(ctx context.Context, request Request) (Response, error) {
 	return h.ReturnResponse, h.ReturnError
 }
 
@@ -46,12 +47,12 @@ func TestRegisterAndSend(t *testing.T) {
 	mediator.Register("MockRequest", mockHandler)
 
 	// Testar envio de solicitação
-	ginContext, _ := gin.CreateTestContext(nil)
-	response, err := mediator.Send(ginContext, mockRequest)
+	ctx := context.Background()
+	response, err := mediator.Send(ctx, mockRequest)
 
 	// Verificações
 	assert.NoError(t, err, "Send não deve retornar erro quando o handler registrado retorna sucesso")
-	
+
 	mockResponse, ok := response.(MockResponse)
 	assert.True(t, ok, "Response deve ser do tipo MockResponse")
 	assert.Equal(t, "success", mockResponse.Result, "Response deve conter o resultado esperado")
@@ -71,8 +72,8 @@ func TestSendWithHandlerError(t *testing.T) {
 	mediator.Register("MockRequest", mockHandler)
 
 	// Testar envio de solicitação
-	ginContext, _ := gin.CreateTestContext(nil)
-	response, err := mediator.Send(ginContext, mockRequest)
+	ctx := context.Background()
+	response, err := mediator.Send(ctx, mockRequest)
 
 	// Verificações
 	assert.Equal(t, expectedError, err, "Send deve retornar o erro do handler")
@@ -85,11 +86,11 @@ func TestSendWithoutRegisteredHandler(t *testing.T) {
 	mockRequest := MockRequest{Data: "test"}
 
 	// Testar envio de solicitação sem handler registrado
-	ginContext, _ := gin.CreateTestContext(nil)
-	response, err := mediator.Send(ginContext, mockRequest)
+	ctx := context.Background()
+	response, err := mediator.Send(ctx, mockRequest)
 
 	// Verificações
 	assert.Error(t, err, "Send deve retornar erro quando não há handler registrado")
 	assert.Nil(t, response, "Response deve ser nil quando não há handler registrado")
 	assert.Equal(t, "no handler registered for request type", err.Error(), "Mensagem de erro incorreta")
-} 
+}

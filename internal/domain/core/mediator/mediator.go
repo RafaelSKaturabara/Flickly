@@ -1,11 +1,10 @@
 package mediator
 
 import (
+	"context"
 	"errors"
 
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Request interface para requisições
@@ -17,13 +16,13 @@ type Response interface{}
 
 // Handler interface para manipuladores de requisições
 type Handler interface {
-	Handle(c *gin.Context, request Request) (Response, error)
+	Handle(c context.Context, request Request) (Response, error)
 }
 
 // Mediator interface para o mediador
 type Mediator interface {
 	Register(requestName string, handler Handler)
-	Send(c *gin.Context, request Request) (Response, error)
+	Send(c context.Context, request Request) (Response, error)
 }
 
 type MediatR struct {
@@ -43,7 +42,7 @@ func (m *MediatR) Register(requestName string, handler Handler) {
 }
 
 // Send envia a requisição para o manipulador apropriado
-func (m *MediatR) Send(c *gin.Context, request Request) (Response, error) {
+func (m *MediatR) Send(c context.Context, request Request) (Response, error) {
 	structName := utilities.GetStructName(request)
 	handler, ok := m.handlers[structName]
 	if !ok {

@@ -4,6 +4,9 @@ import (
 	"net/http"
 
 	"github.com/rkaturabara/flickly/internal/api/commons/controllers"
+	"github.com/rkaturabara/flickly/internal/api/commons/helpers"
+	viewmodel "github.com/rkaturabara/flickly/internal/api/users/viewmodel"
+	"github.com/rkaturabara/flickly/internal/domain/users/command_handlers"
 	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
 	"github.com/rkaturabara/flickly/internal/infra/auth"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
@@ -78,6 +81,9 @@ func (c *AuthController) Register(ctx *gin.Context) {
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
 // @Router /auth/token [post]
 func (c *AuthController) Token(ctx *gin.Context) {
+
+	helpers.ViewHelper[viewmodel.CreateUserRequest, command_handlers.CreateTokenCommand, viewmodel.CreateUserResponse](ctx, &c.Controller, http.StatusCreated)
+
 	var req auth.TokenRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

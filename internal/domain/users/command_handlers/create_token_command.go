@@ -1,7 +1,8 @@
-package commands
+package command_handlers
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+
 	"github.com/rkaturabara/flickly/internal/domain/core"
 	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
 	"github.com/rkaturabara/flickly/internal/domain/users/entities"
@@ -9,29 +10,29 @@ import (
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
-type CreateUserCommand struct {
+type CreateTokenCommand struct {
 	Name       string `json:"name"`
 	Email      string `json:"email"`
 	Provider   string `json:"provider"`
 	ProviderID string `json:"provider_id"`
 }
 
-type CreateUserCommandHandler struct {
+type CreateCreateTokenCommandHandler struct {
 	mediator       mediator.Mediator
 	userRepository repositories.IUserRepository
 }
 
-func NewCreateUserCommandHandler(serviceCollection utilities.IServiceCollection) *CreateUserCommandHandler {
+func NewCreateTokenCommandHandler(serviceCollection utilities.IServiceCollection) *CreateUserCommandHandler {
 	return &CreateUserCommandHandler{
 		mediator:       utilities.GetService[mediator.Mediator](serviceCollection),
 		userRepository: utilities.GetService[repositories.IUserRepository](serviceCollection),
 	}
 }
 
-func (h *CreateUserCommandHandler) Handle(c *gin.Context, request mediator.Request) (mediator.Response, error) {
-	command := request.(CreateUserCommand)
+func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request mediator.Request) (mediator.Response, error) {
+	command := request.(CreateTokenCommand)
 	user := entities.NewUser(command.Name, command.Email, command.Provider, command.ProviderID)
-	err := h.userRepository.CreateUser(c.Request.Context(), user)
+	err := h.userRepository.CreateUser(c, user)
 	if err != nil {
 		return nil, core.ErrUserAlreadyExist(err)
 	}

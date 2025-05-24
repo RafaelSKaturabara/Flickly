@@ -7,7 +7,7 @@ import (
 	"github.com/rkaturabara/flickly/internal/api/commons/controllers"
 	"github.com/rkaturabara/flickly/internal/api/commons/helpers"
 	viewmodel "github.com/rkaturabara/flickly/internal/api/users/viewmodel"
-	"github.com/rkaturabara/flickly/internal/domain/users/commands"
+	"github.com/rkaturabara/flickly/internal/domain/users/command_handlers"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
@@ -33,5 +33,5 @@ func NewUserController(serviceCollection utilities.IServiceCollection) *UserCont
 // @Failure 400 {object} object
 // @Router /user [post]
 func (u *UserController) PostUser(c *gin.Context) {
-	helpers.ViewHelper[viewmodel.CreateUserRequest, commands.CreateUserCommand, viewmodel.CreateUserResponse](c, &u.Controller, http.StatusCreated)
+	helpers.ViewHelper[viewmodel.CreateUserRequest, command_handlers.CreateUserCommand, viewmodel.CreateUserResponse](c, &u.Controller, http.StatusCreated)
 }
