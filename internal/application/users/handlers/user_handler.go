@@ -1,24 +1,24 @@
-package controllers
+package handlers
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rkaturabara/flickly/internal/api/commons/controllers"
-	"github.com/rkaturabara/flickly/internal/api/commons/helpers"
-	viewmodel "github.com/rkaturabara/flickly/internal/api/users/viewmodel"
+	"github.com/rkaturabara/flickly/internal/application/commons/handlers"
+	"github.com/rkaturabara/flickly/internal/application/commons/helpers"
+	viewmodel "github.com/rkaturabara/flickly/internal/application/users/viewmodel"
 	"github.com/rkaturabara/flickly/internal/domain/users/command_handlers"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
-type UserController struct {
-	controllers.Controller
+type UserHandler struct {
+	handlers.Handler
 }
 
 // NewUserController cria uma nova instância de UserController
-func NewUserController(serviceCollection utilities.IServiceCollection) *UserController {
-	return &UserController{
-		Controller: controllers.NewController(serviceCollection),
+func NewUserController(serviceCollection utilities.IServiceCollection) *UserHandler {
+	return &UserHandler{
+		Handler: handlers.NewHandler(serviceCollection),
 	}
 }
 
@@ -32,7 +32,7 @@ func NewUserController(serviceCollection utilities.IServiceCollection) *UserCont
 // @Success 200 {object} viewmodel.CreateUserResponse
 // @Failure 400 {object} object
 // @Router /user [post]
-func (u *UserController) PostUser(c *gin.Context) {
+func (u *UserHandler) PostUser(c *gin.Context) {
 	helpers.ViewHelperWithSuccessStatusCode[viewmodel.CreateUserRequest, command_handlers.CreateUserCommand, viewmodel.CreateUserResponse](
-		c, &u.Controller, http.StatusCreated)
+		c, &u.Handler, http.StatusCreated)
 }

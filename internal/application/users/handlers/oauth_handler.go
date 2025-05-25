@@ -1,11 +1,11 @@
-package controllers
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/rkaturabara/flickly/internal/api/commons/controllers"
-	"github.com/rkaturabara/flickly/internal/api/commons/helpers"
-	viewmodel "github.com/rkaturabara/flickly/internal/api/users/viewmodel"
+	"github.com/rkaturabara/flickly/internal/application/commons/handlers"
+	"github.com/rkaturabara/flickly/internal/application/commons/helpers"
+	viewmodel "github.com/rkaturabara/flickly/internal/application/users/viewmodel"
 	"github.com/rkaturabara/flickly/internal/domain/users/command_handlers"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 
@@ -16,8 +16,8 @@ import (
 // @Summary Controlador de autenticação
 // @Description Gerencia operações de registro e autenticação de usuários
 // @Tags oauth
-type OAuthController struct {
-	controllers.Controller
+type OAuthHandler struct {
+	handlers.Handler
 }
 
 // NewAuthController cria uma nova instância do AuthController
@@ -26,9 +26,9 @@ type OAuthController struct {
 // @Tags oauth
 // @Param serviceCollection body utilities.IServiceCollection true "Coleção de serviços"
 // @Return *AuthController
-func NewOAuthController(serviceCollection utilities.IServiceCollection) *OAuthController {
-	return &OAuthController{
-		Controller: controllers.NewController(serviceCollection),
+func NewOAuthHandler(serviceCollection utilities.IServiceCollection) *OAuthHandler {
+	return &OAuthHandler{
+		Handler: handlers.NewHandler(serviceCollection),
 	}
 }
 
@@ -44,7 +44,7 @@ func NewOAuthController(serviceCollection utilities.IServiceCollection) *OAuthCo
 // @Failure 409 {object} map[string]string "Usuário já existe"
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
 // @Router /oauth/register [post]
-func (c *OAuthController) Register(ctx *gin.Context) {
+func (c *OAuthHandler) Register(ctx *gin.Context) {
 	var req viewmodel.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -81,9 +81,9 @@ func (c *OAuthController) Register(ctx *gin.Context) {
 // @Failure 401 {object} map[string]string "Credenciais inválidas"
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
 // @Router /oauth/token [post]
-func (c *OAuthController) Token(ctx *gin.Context) {
+func (c *OAuthHandler) Token(ctx *gin.Context) {
 
-	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Controller)
+	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
 
 	// var req viewmodel.TokenRequest
 	// if err := ctx.ShouldBindJSON(&req); err != nil {

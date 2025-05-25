@@ -1,10 +1,10 @@
-package controllers
+package handlers
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/rkaturabara/flickly/internal/api/commons/view_model"
+	"github.com/rkaturabara/flickly/internal/application/commons/view_model"
 	"github.com/rkaturabara/flickly/internal/domain/core"
 	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
@@ -12,19 +12,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Controller struct {
+type Handler struct {
 	Mapper   utilities.Mapper
 	Mediator mediator.Mediator
 }
 
-func NewController(collection utilities.IServiceCollection) Controller {
-	return Controller{
+func NewHandler(collection utilities.IServiceCollection) Handler {
+	return Handler{
 		Mapper:   utilities.GetService[utilities.Mapper](collection),
 		Mediator: utilities.GetService[mediator.Mediator](collection),
 	}
 }
 
-func (c *Controller) SuccessResponse(ctx *gin.Context, successResponse any, successStatusCode int) {
+func (c *Handler) SuccessResponse(ctx *gin.Context, successResponse any, successStatusCode int) {
 	statusCode := http.StatusOK
 	if successStatusCode > 0 {
 		statusCode = successStatusCode
@@ -33,7 +33,7 @@ func (c *Controller) SuccessResponse(ctx *gin.Context, successResponse any, succ
 	ctx.JSON(statusCode, successResponse)
 }
 
-func (c *Controller) ErrorResponse(ctx *gin.Context, err error) {
+func (c *Handler) ErrorResponse(ctx *gin.Context, err error) {
 	var domainError *core.DomainError
 	if errors.As(err, &domainError) {
 		var errorResponse view_model.ErrorResponse
