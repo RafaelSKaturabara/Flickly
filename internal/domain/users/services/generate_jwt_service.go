@@ -34,13 +34,13 @@ func (s *GenerateJWTService) Run(ctx context.Context, entity core.Entity) error 
 
 func (s *GenerateJWTService) generateJWT(user *entities.User) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id": user.GetID().String(),
-		"email":   user.Email,
-		"name":    user.Name,
-		"roles":   user.Roles,
-		"exp":     time.Now().Add(time.Hour).Unix(), // Token válido por 1 hora
+		"id":    user.GetID().String(),
+		"email": user.Email,
+		"name":  user.Name,
+		"roles": user.Roles,
+		"exp":   time.Now().Add(time.Hour).Unix(), // Token válido por 1 hora
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("s.jwtSecret"))
+	return token.SignedString([]byte("config.JWTSecret"))
 }

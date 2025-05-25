@@ -36,7 +36,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/register": {
+        "/health": {
+            "get": {
+                "description": "Retorna o status de saúde do servidor",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Verificar saúde do servidor",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/oauth/register": {
             "post": {
                 "description": "Cria uma nova conta de usuário no sistema",
                 "consumes": [
@@ -46,7 +64,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "oauth"
                 ],
                 "summary": "Registra um novo usuário",
                 "parameters": [
@@ -97,7 +115,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/token": {
+        "/oauth/token": {
             "post": {
                 "description": "Gera um token de acesso usando OAuth2",
                 "consumes": [
@@ -107,7 +125,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "oauth"
                 ],
                 "summary": "Autentica um usuário",
                 "parameters": [
@@ -186,24 +204,6 @@ const docTemplate = `{
                                 "type": "string"
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/health": {
-            "get": {
-                "description": "Retorna o status de saúde do servidor",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "system"
-                ],
-                "summary": "Verificar saúde do servidor",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {}
                     }
                 }
             }
@@ -347,12 +347,6 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "family_name": {
-                    "type": "string"
-                },
-                "given_name": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -360,12 +354,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "picture": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "string"
-                },
-                "provider_id": {
                     "type": "string"
                 },
                 "roles": {

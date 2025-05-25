@@ -15,7 +15,7 @@ import (
 // AuthController gerencia as operações de autenticação
 // @Summary Controlador de autenticação
 // @Description Gerencia operações de registro e autenticação de usuários
-// @Tags auth
+// @Tags oauth
 type OAuthController struct {
 	controllers.Controller
 }
@@ -23,7 +23,7 @@ type OAuthController struct {
 // NewAuthController cria uma nova instância do AuthController
 // @Summary Cria um novo controlador de autenticação
 // @Description Inicializa um novo controlador com as dependências necessárias
-// @Tags auth
+// @Tags oauth
 // @Param serviceCollection body utilities.IServiceCollection true "Coleção de serviços"
 // @Return *AuthController
 func NewOAuthController(serviceCollection utilities.IServiceCollection) *OAuthController {
@@ -35,7 +35,7 @@ func NewOAuthController(serviceCollection utilities.IServiceCollection) *OAuthCo
 // Register lida com o registro de novos usuários
 // @Summary Registra um novo usuário
 // @Description Cria uma nova conta de usuário no sistema
-// @Tags auth
+// @Tags oauth
 // @Accept json
 // @Produce json
 // @Param request body viewmodel.RegisterRequest true "Dados do usuário para registro"
@@ -43,7 +43,7 @@ func NewOAuthController(serviceCollection utilities.IServiceCollection) *OAuthCo
 // @Failure 400 {object} map[string]string "Dados inválidos"
 // @Failure 409 {object} map[string]string "Usuário já existe"
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
-// @Router /auth/register [post]
+// @Router /oauth/register [post]
 func (c *OAuthController) Register(ctx *gin.Context) {
 	var req viewmodel.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -67,7 +67,7 @@ func (c *OAuthController) Register(ctx *gin.Context) {
 // Token lida com a autenticação OAuth2
 // @Summary Autentica um usuário
 // @Description Gera um token de acesso usando OAuth2
-// @Tags auth
+// @Tags oauth
 // @Accept application/x-www-form-urlencoded
 // @Produce json
 // @Param grant_type formData string true "Tipo de concessão (password)"
@@ -80,7 +80,7 @@ func (c *OAuthController) Register(ctx *gin.Context) {
 // @Failure 400 {object} map[string]string "Dados inválidos"
 // @Failure 401 {object} map[string]string "Credenciais inválidas"
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
-// @Router /auth/token [post]
+// @Router /oauth/token [post]
 func (c *OAuthController) Token(ctx *gin.Context) {
 
 	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Controller)

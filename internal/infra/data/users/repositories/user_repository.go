@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
+	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
 type UserRepository struct {
@@ -18,7 +19,7 @@ type UserRepository struct {
 func (r *UserRepository) GetUserByEmailAndPasswordAndClientAndSecret(ctx context.Context, email, password, clientID, clientSecret string) (*entities.User, error) {
 	for i := range r.users {
 		if r.users[i].Email == email &&
-			r.users[i].Password == password &&
+			utilities.CompareHashAndPassword(r.users[i].Password, password) == nil &&
 			r.users[i].ClientID == clientID &&
 			r.users[i].ClientSecret == clientSecret {
 			return r.users[i], nil

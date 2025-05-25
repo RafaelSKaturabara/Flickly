@@ -19,7 +19,7 @@ func TestNewUserRepository(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	// Configuração
 	repository := NewUserRepository()
-	user := entities.NewUser("Test User", "test@example.com", "google", "123456789")
+	user := entities.NewUser("Test User", "test@example.com", "google", "123456789", "password123")
 	ctx := context.Background()
 
 	// Execução - primeiro usuário
@@ -34,7 +34,7 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, user.Email, retrievedUser.Email, "O email do usuário deve ser armazenado corretamente")
 
 	// Execução - tentativa de duplicar usuário
-	duplicateUser := entities.NewUser("Duplicate User", "test@example.com", "google", "987654321")
+	duplicateUser := entities.NewUser("Duplicate User", "test@example.com", "google", "987654321", "password456")
 	err = repository.CreateUser(ctx, duplicateUser)
 
 	// Verificações
@@ -45,7 +45,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserByEmail(t *testing.T) {
 	// Configuração
 	repository := NewUserRepository()
-	user := entities.NewUser("Test User", "test@example.com", "google", "123456789")
+	user := entities.NewUser("Test User", "test@example.com", "google", "123456789", "password123")
 	ctx := context.Background()
 	err := repository.CreateUser(ctx, user)
 	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")

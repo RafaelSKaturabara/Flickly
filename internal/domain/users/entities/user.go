@@ -10,8 +10,6 @@ type User struct {
 	Email         string   `json:"email"`
 	Name          string   `json:"name"`
 	Password      string   `json:"-"` // Senha não é serializada em JSON
-	GivenName     string   `json:"given_name,omitempty"`
-	FamilyName    string   `json:"family_name,omitempty"`
 	Picture       string   `json:"picture,omitempty"`
 	VerifiedEmail bool     `json:"verified_email"`
 	Roles         []string `json:"roles"`
@@ -24,7 +22,7 @@ type User struct {
 }
 
 // NewUser cria uma nova instância de User
-func NewUser(name, email, clientID, clientSecret string) *User {
+func NewUser(name, email, clientID, clientSecret, password string) *User {
 	return &User{
 		BaseEntity:    core.NewBaseEntity(),
 		Email:         email,
@@ -33,6 +31,7 @@ func NewUser(name, email, clientID, clientSecret string) *User {
 		VerifiedEmail: false,
 		ClientID:      clientID,
 		ClientSecret:  clientSecret,
+		Password:      password,
 	}
 }
 
@@ -101,16 +100,6 @@ func (u *User) UpdateOAuthInfo(accessToken, refreshToken string, tokenExpiry int
 // UpdateProfile atualiza as informações do perfil do usuário
 func (u *User) UpdateProfile(name, givenName, familyName, picture string, verifiedEmail bool) {
 	u.Name = name
-	u.GivenName = givenName
-	u.FamilyName = familyName
 	u.Picture = picture
 	u.VerifiedEmail = verifiedEmail
-}
-
-// GetFullName retorna o nome completo do usuário
-func (u *User) GetFullName() string {
-	if u.GivenName != "" && u.FamilyName != "" {
-		return u.GivenName + " " + u.FamilyName
-	}
-	return u.Name
 }

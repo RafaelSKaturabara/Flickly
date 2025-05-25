@@ -11,13 +11,12 @@ import (
 )
 
 type CreateTokenCommand struct {
-	Name         string
-	Email        string
-	Provider     string
-	ProviderID   string
-	Password     string
+	GrantType    string
 	ClientID     string
 	ClientSecret string
+	Username     string
+	Password     string
+	Scope        string
 }
 
 type CreateCreateTokenCommandHandler struct {
@@ -36,8 +35,9 @@ func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request medi
 	command := request.(CreateTokenCommand)
 
 	var err error
+
 	// Busca o usuário pelo email
-	user, err := h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Email, command.Password, command.ClientID, command.ClientSecret)
+	user, err := h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Username, command.Password, command.ClientID, command.ClientSecret)
 	if err != nil || user == nil {
 		// corrigir erro na consulta
 		return nil, core.ErrInvalidCredentials(err)

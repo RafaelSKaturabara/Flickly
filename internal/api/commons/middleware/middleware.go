@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/rkaturabara/flickly/internal/domain/core"
 	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 )
 
@@ -46,6 +48,7 @@ func (m *JWTMiddleware) Auth() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			email := claims["email"].(string)
 			name := claims["name"].(string)
+			id := claims["id"].(string)
 			roles := make([]string, 0)
 			if rolesClaim, ok := claims["roles"].([]interface{}); ok {
 				for _, role := range rolesClaim {
@@ -57,6 +60,9 @@ func (m *JWTMiddleware) Auth() gin.HandlerFunc {
 				Email: email,
 				Name:  name,
 				Roles: roles,
+				BaseEntity: core.BaseEntity{
+					ID: uuid.MustParse(id),
+				},
 			}
 
 			c.Set("user", user)
