@@ -322,9 +322,6 @@ const docTemplate = `{
                 "expires_in": {
                     "type": "integer"
                 },
-                "refresh_token": {
-                    "type": "string"
-                },
                 "scope": {
                     "type": "string"
                 },
@@ -365,6 +362,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "token_type": {
+                    "type": "string"
                 },
                 "updateAt": {
                     "type": "string"
