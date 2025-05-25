@@ -12,8 +12,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rkaturabara/flickly/docs"
-	"github.com/rkaturabara/flickly/internal/api/flickly"
-	"github.com/rkaturabara/flickly/internal/api/users"
+	"github.com/rkaturabara/flickly/internal/application/flickly"
+	"github.com/rkaturabara/flickly/internal/application/users"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/ioc"
 	swaggerConfig "github.com/rkaturabara/flickly/internal/infra/crosscutting/swagger"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"

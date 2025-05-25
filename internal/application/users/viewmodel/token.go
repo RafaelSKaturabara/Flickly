@@ -28,3 +28,7 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	User *entities.User `json:"user"`
 }
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}

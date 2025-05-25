@@ -67,4 +67,7 @@ var (
 	ErrInvalidScope = func(err error) *DomainError {
 		return NewDomainErrorBuilder(err).WithMessage("escopo inválido").WithErrorCode(6).Build()
 	}
+	ErrInvalidToken = func(err error) *DomainError {
+		return NewDomainErrorBuilder(err).WithMessage("Token inválido").WithErrorCode(7).WithStatusCode(http.StatusUnauthorized).Build()
+	}
 )

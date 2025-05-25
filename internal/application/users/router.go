@@ -2,20 +2,20 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rkaturabara/flickly/internal/api/commons/middleware"
-	"github.com/rkaturabara/flickly/internal/api/users/controllers"
+	"github.com/rkaturabara/flickly/internal/application/commons/middleware"
+	"github.com/rkaturabara/flickly/internal/application/users/handlers"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
 // Configura e inicia o roteador Gin
 func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection) {
-	userController := controllers.NewUserController(serviceCollection)
+	userController := handlers.NewUserHandler(serviceCollection)
 
 	// Configurando rotas
 	router.POST("/user", userController.PostUser)
 
 	// Cria o controlador de autenticação
-	oauthController := controllers.NewOAuthController(serviceCollection)
+	oauthController := handlers.NewOAuthHandler(serviceCollection)
 
 	// Cria o middleware JWT
 	jwtMiddleware := middleware.NewJWTMiddleware("config.JWTSecret")
@@ -26,6 +26,7 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 		// Rotas públicas
 		authGroup.POST("/register", oauthController.Register)
 		authGroup.POST("/token", oauthController.Token)
+		authGroup.POST("/refresh", oauthController.RefreshToken)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {

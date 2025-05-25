@@ -16,7 +16,7 @@ type UserHandler struct {
 }
 
 // NewUserController cria uma nova instância de UserController
-func NewUserController(serviceCollection utilities.IServiceCollection) *UserHandler {
+func NewUserHandler(serviceCollection utilities.IServiceCollection) *UserHandler {
 	return &UserHandler{
 		Handler: handlers.NewHandler(serviceCollection),
 	}

@@ -38,6 +38,10 @@ func ViewHelperUrlEncodedWith[VMRequest any, CCommand mediator.Request, VMRespon
 	sendToMediatorAndGenerateResponse[VMResponse](ctx, controller, 0, command)
 }
 
+func ViewHelperWith[VMRequest any, CCommand mediator.Request, VMResponse any](ctx *gin.Context, controller *handlers.Handler) {
+	ViewHelperWithSuccessStatusCode[VMRequest, CCommand, VMResponse](ctx, controller, 0)
+}
+
 func sendToMediatorAndGenerateResponse[VMResponse any](ctx *gin.Context, controller *handlers.Handler, statusCode int, command mediator.Request) {
 	response, err := controller.Mediator.Send(ctx, command)
 	if err != nil {

@@ -10,4 +10,5 @@ func InjectMediatorHandlers(serviceCollection utilities.IServiceCollection) {
 	mediatR := utilities.GetService[mediator.Mediator](serviceCollection)
 	mediatR.Register("CreateUserCommand", command_handlers.NewCreateUserCommandHandler(serviceCollection))
 	mediatR.Register("CreateTokenCommand", command_handlers.NewCreateTokenCommandHandler(serviceCollection))
+	mediatR.Register("RefreshTokenCommand", command_handlers.NewRefreshTokenCommandHandler(serviceCollection))
 }

@@ -54,6 +54,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/oauth/refresh": {
+            "post": {
+                "description": "Gera um novo token de acesso usando o refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "oauth"
+                ],
+                "summary": "Renova o token de acesso",
+                "parameters": [
+                    {
+                        "description": "Refresh token",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RefreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token renovado com sucesso",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token inválido",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/oauth/register": {
             "post": {
                 "description": "Cria uma nova conta de usuário no sistema",
@@ -74,7 +135,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterRequest"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest"
                         }
                     }
                 ],
@@ -82,7 +143,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Usuário registrado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse"
                         }
                     },
                     "400": {
@@ -175,7 +236,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Token gerado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.TokenResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse"
                         }
                     },
                     "400": {
@@ -228,7 +289,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest"
                         }
                     }
                 ],
@@ -236,7 +297,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.CreateUserResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -250,7 +311,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.CreateUserRequest": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -264,7 +325,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.CreateUserResponse": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -281,7 +342,18 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterRequest": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -301,7 +373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterResponse": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse": {
             "type": "object",
             "properties": {
                 "user": {
@@ -309,7 +381,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.TokenResponse": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse": {
             "type": "object",
             "properties": {
                 "access_token": {

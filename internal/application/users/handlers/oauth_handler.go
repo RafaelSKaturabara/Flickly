@@ -82,29 +82,21 @@ func (c *OAuthHandler) Register(ctx *gin.Context) {
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
 // @Router /oauth/token [post]
 func (c *OAuthHandler) Token(ctx *gin.Context) {
-
 	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
+}
 
-	// var req viewmodel.TokenRequest
-	// if err := ctx.ShouldBindJSON(&req); err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// response, err := c.authService.Token(ctx.Request.Context(), req)
-	// if err != nil {
-	// 	switch err {
-	// 	case auth.ErrInvalidClient:
-	// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Client ID ou Client Secret inválidos"})
-	// 	case auth.ErrInvalidGrant:
-	// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Grant type inválido"})
-	// 	case auth.ErrInvalidCredentials:
-	// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciais inválidas"})
-	// 	default:
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao gerar token"})
-	// 	}
-	// 	return
-	// }
-
-	// ctx.JSON(http.StatusOK, response)
+// RefreshToken lida com a renovação do token de acesso
+// @Summary Renova o token de acesso
+// @Description Gera um novo token de acesso usando o refresh token
+// @Tags oauth
+// @Accept json
+// @Produce json
+// @Param request body viewmodel.RefreshTokenRequest true "Refresh token"
+// @Success 200 {object} viewmodel.TokenResponse "Token renovado com sucesso"
+// @Failure 400 {object} map[string]string "Dados inválidos"
+// @Failure 401 {object} map[string]string "Token inválido"
+// @Failure 500 {object} map[string]string "Erro interno do servidor"
+// @Router /oauth/refresh [post]
+func (c *OAuthHandler) RefreshToken(ctx *gin.Context) {
+	helpers.ViewHelperWith[viewmodel.RefreshTokenRequest, command_handlers.RefreshTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
 }
