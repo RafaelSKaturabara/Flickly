@@ -14,25 +14,25 @@ type User struct {
 	FamilyName    string   `json:"family_name,omitempty"`
 	Picture       string   `json:"picture,omitempty"`
 	VerifiedEmail bool     `json:"verified_email"`
-	Provider      string   `json:"provider,omitempty"`
-	ProviderID    string   `json:"provider_id,omitempty"`
 	Roles         []string `json:"roles"`
 	AccessToken   string   `json:"-"`
 	RefreshToken  string   `json:"-"`
 	TokenExpiry   int64    `json:"-"`
 	TokenScopes   []string `json:"-"`
+	ClientID      string   `json:"client_id"`
+	ClientSecret  string   `json:"client_secret"`
 }
 
 // NewUser cria uma nova instância de User
-func NewUser(name, email, provider, providerID string) *User {
+func NewUser(name, email, clientID, clientSecret string) *User {
 	return &User{
 		BaseEntity:    core.NewBaseEntity(),
 		Email:         email,
 		Name:          name,
-		Provider:      provider,
-		ProviderID:    providerID,
 		Roles:         []string{"user"},
 		VerifiedEmail: false,
+		ClientID:      clientID,
+		ClientSecret:  clientSecret,
 	}
 }
 

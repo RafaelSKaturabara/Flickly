@@ -2,98 +2,129 @@ package repositories
 
 import (
 	"context"
-	"errors"
+
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/rkaturabara/flickly/internal/domain/users/entities"
+	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
 )
 
 type UserRepository struct {
-	Users []entities.User
+	users map[uuid.UUID]*entities.User
+	mu    sync.RWMutex
 }
 
-func NewUserRepository() *UserRepository {
+func (r *UserRepository) GetUserByEmailAndPasswordAndClientAndSecret(ctx context.Context, email, password, clientID, clientSecret string) (*entities.User, error) {
+	for i := range r.users {
+		if r.users[i].Email == email &&
+			r.users[i].Password == password &&
+			r.users[i].ClientID == clientID &&
+			r.users[i].ClientSecret == clientSecret {
+			return r.users[i], nil
+		}
+	}
+	return nil, repositories.ErrUserNotFound
+}
+
+func NewUserRepository() repositories.IUserRepository {
 	return &UserRepository{
-		Users: make([]entities.User, 0),
+		users: make(map[uuid.UUID]*entities.User),
 	}
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *entities.User) error {
-	for _, existingUser := range r.Users {
-		if user.Email == existingUser.Email {
-			return errors.New("user already exists")
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Verifica se já existe um usuário com o mesmo email
+	for _, existingUser := range r.users {
+		if existingUser.Email == user.Email {
+			return repositories.ErrUserAlreadyExists
 		}
 	}
-	r.Users = append(r.Users, *user)
+
+	r.users[user.GetID()] = user
 	return nil
 }
 
 func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
-	for i := range r.Users {
-		if r.Users[i].Email == email {
-			return &r.Users[i], nil
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	for _, user := range r.users {
+		if user.Email == email {
+			return user, nil
 		}
 	}
-	return nil, nil
+
+	return nil, repositories.ErrUserNotFound
 }
 
 func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.User, error) {
-	for i := range r.Users {
-		if r.Users[i].GetID() == id {
-			return &r.Users[i], nil
-		}
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	user, exists := r.users[id]
+	if !exists {
+		return nil, repositories.ErrUserNotFound
 	}
-	return nil, nil
+
+	return user, nil
 }
 
 func (r *UserRepository) UpdateUser(ctx context.Context, user *entities.User) error {
-	for i, u := range r.Users {
-		if u.GetID() == user.GetID() {
-			r.Users[i] = *user
-			return nil
-		}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.users[user.GetID()]; !exists {
+		return repositories.ErrUserNotFound
 	}
-	return errors.New("user not found")
+
+	r.users[user.GetID()] = user
+	return nil
 }
 
 func (r *UserRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	for i, user := range r.Users {
-		if user.GetID() == id {
-			r.Users = append(r.Users[:i], r.Users[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("user not found")
-}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-func (r *UserRepository) GetUserByProviderID(ctx context.Context, provider, providerID string) (*entities.User, error) {
-	for i := range r.Users {
-		if r.Users[i].Provider == provider && r.Users[i].ProviderID == providerID {
-			return &r.Users[i], nil
-		}
+	if _, exists := r.users[id]; !exists {
+		return repositories.ErrUserNotFound
 	}
-	return nil, nil
+
+	delete(r.users, id)
+	return nil
 }
 
 func (r *UserRepository) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UUID, accessToken, refreshToken string, tokenExpiry int64, scopes []string) error {
-	for i, user := range r.Users {
-		if user.GetID() == userID {
-			r.Users[i].AccessToken = accessToken
-			r.Users[i].RefreshToken = refreshToken
-			r.Users[i].TokenExpiry = tokenExpiry
-			r.Users[i].TokenScopes = scopes
-			return nil
-		}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	user, exists := r.users[userID]
+	if !exists {
+		return repositories.ErrUserNotFound
 	}
-	return errors.New("user not found")
+
+	user.AccessToken = accessToken
+	user.RefreshToken = refreshToken
+	user.TokenExpiry = tokenExpiry
+	user.TokenScopes = scopes
+
+	r.users[userID] = user
+	return nil
 }
 
 func (r *UserRepository) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []string) error {
-	for i, user := range r.Users {
-		if user.GetID() == userID {
-			r.Users[i].Roles = roles
-			return nil
-		}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	user, exists := r.users[userID]
+	if !exists {
+		return repositories.ErrUserNotFound
 	}
-	return errors.New("user not found")
+
+	user.Roles = roles
+	r.users[userID] = user
+	return nil
 }

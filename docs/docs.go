@@ -56,7 +56,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_infra_auth.RegisterRequest"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterRequest"
                         }
                     }
                 ],
@@ -64,7 +64,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Usuário registrado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_infra_auth.RegisterResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterResponse"
                         }
                     },
                     "400": {
@@ -101,7 +101,7 @@ const docTemplate = `{
             "post": {
                 "description": "Gera um token de acesso usando OAuth2",
                 "consumes": [
-                    "application/json"
+                    "application/x-www-form-urlencoded"
                 ],
                 "produces": [
                     "application/json"
@@ -112,20 +112,52 @@ const docTemplate = `{
                 "summary": "Autentica um usuário",
                 "parameters": [
                     {
-                        "description": "Credenciais de autenticação",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_infra_auth.TokenRequest"
-                        }
+                        "type": "string",
+                        "description": "Tipo de concessão (password)",
+                        "name": "grant_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do cliente",
+                        "name": "client_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Segredo do cliente",
+                        "name": "client_secret",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nome de usuário (email)",
+                        "name": "username",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Senha do usuário",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Escopo do token",
+                        "name": "scope",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Token gerado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_infra_auth.TokenResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_api_users_viewmodel.TokenResponse"
                         }
                     },
                     "400": {
@@ -249,9 +281,63 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_domain_users_entities.User"
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_api_users_viewmodel.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "token_type": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_rkaturabara_flickly_internal_domain_users_entities.User": {
             "type": "object",
             "properties": {
+                "client_id": {
+                    "type": "string"
+                },
+                "client_secret": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -293,84 +379,6 @@ const docTemplate = `{
                 },
                 "verified_email": {
                     "type": "boolean"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_infra_auth.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_infra_auth.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "user": {
-                    "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_domain_users_entities.User"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_infra_auth.TokenRequest": {
-            "type": "object",
-            "required": [
-                "client_id",
-                "client_secret",
-                "grant_type",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "client_id": {
-                    "type": "string"
-                },
-                "client_secret": {
-                    "type": "string"
-                },
-                "grant_type": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_infra_auth.TokenResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expires_in": {
-                    "type": "integer"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "token_type": {
-                    "type": "string"
                 }
             }
         }

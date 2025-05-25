@@ -33,5 +33,6 @@ func NewUserController(serviceCollection utilities.IServiceCollection) *UserCont
 // @Failure 400 {object} object
 // @Router /user [post]
 func (u *UserController) PostUser(c *gin.Context) {
-	helpers.ViewHelper[viewmodel.CreateUserRequest, command_handlers.CreateUserCommand, viewmodel.CreateUserResponse](c, &u.Controller, http.StatusCreated)
+	helpers.ViewHelperWithSuccessStatusCode[viewmodel.CreateUserRequest, command_handlers.CreateUserCommand, viewmodel.CreateUserResponse](
+		c, &u.Controller, http.StatusCreated)
 }

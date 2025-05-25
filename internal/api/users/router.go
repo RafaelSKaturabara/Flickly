@@ -15,17 +15,17 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 	router.POST("/user", userController.PostUser)
 
 	// Cria o controlador de autenticação
-	authController := controllers.NewAuthController(serviceCollection)
+	oauthController := controllers.NewOAuthController(serviceCollection)
 
 	// Cria o middleware JWT
 	jwtMiddleware := middleware.NewJWTMiddleware("config.JWTSecret")
 
 	// Grupo de rotas de autenticação
-	authGroup := router.Group("/auth")
+	authGroup := router.Group("/oauth")
 	{
 		// Rotas públicas
-		authGroup.POST("/register", authController.Register)
-		authGroup.POST("/token", authController.Token)
+		authGroup.POST("/register", oauthController.Register)
+		authGroup.POST("/token", oauthController.Token)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {

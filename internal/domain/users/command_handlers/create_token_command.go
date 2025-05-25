@@ -5,16 +5,19 @@ import (
 
 	"github.com/rkaturabara/flickly/internal/domain/core"
 	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
-	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
+	"github.com/rkaturabara/flickly/internal/domain/users/services"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
 type CreateTokenCommand struct {
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	Provider   string `json:"provider"`
-	ProviderID string `json:"provider_id"`
+	Name         string
+	Email        string
+	Provider     string
+	ProviderID   string
+	Password     string
+	ClientID     string
+	ClientSecret string
 }
 
 type CreateCreateTokenCommandHandler struct {
@@ -22,8 +25,8 @@ type CreateCreateTokenCommandHandler struct {
 	userRepository repositories.IUserRepository
 }
 
-func NewCreateTokenCommandHandler(serviceCollection utilities.IServiceCollection) *CreateUserCommandHandler {
-	return &CreateUserCommandHandler{
+func NewCreateTokenCommandHandler(serviceCollection utilities.IServiceCollection) *CreateCreateTokenCommandHandler {
+	return &CreateCreateTokenCommandHandler{
 		mediator:       utilities.GetService[mediator.Mediator](serviceCollection),
 		userRepository: utilities.GetService[repositories.IUserRepository](serviceCollection),
 	}
@@ -31,10 +34,27 @@ func NewCreateTokenCommandHandler(serviceCollection utilities.IServiceCollection
 
 func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request mediator.Request) (mediator.Response, error) {
 	command := request.(CreateTokenCommand)
-	user := entities.NewUser(command.Name, command.Email, command.Provider, command.ProviderID)
-	err := h.userRepository.CreateUser(c, user)
-	if err != nil {
-		return nil, core.ErrUserAlreadyExist(err)
+
+	var err error
+	// Busca o usuário pelo email
+	user, err := h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Email, command.Password, command.ClientID, command.ClientSecret)
+	if err != nil || user == nil {
+		// corrigir erro na consulta
+		return nil, core.ErrInvalidCredentials(err)
 	}
+
+	var serviceRules []core.Service
+	serviceRules = append(serviceRules, services.NewGenerateJWTService())
+	serviceRules = append(serviceRules, services.NewGenerateRefreshTokenService())
+
+	for _, service := range serviceRules {
+		if service.AbleToRun(c, user) {
+			err = service.Run(c, user)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	return user, nil
 }

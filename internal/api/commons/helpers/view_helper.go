@@ -3,14 +3,13 @@ package helpers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rkaturabara/flickly/internal/api/commons/controllers"
+	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
 )
 
-func ViewHelper[VMRequest any, CCommand any, VMResponse any](ctx *gin.Context, controller *controllers.Controller, statusCode int) {
+func ViewHelperWithSuccessStatusCode[VMRequest any, CCommand mediator.Request, VMResponse any](ctx *gin.Context, controller *controllers.Controller, statusCode int) {
 	var vmRequest VMRequest
 	if err := ctx.ShouldBindJSON(&vmRequest); err != nil {
-
 		controller.ErrorResponse(ctx, err)
-
 		return
 	}
 
@@ -20,6 +19,26 @@ func ViewHelper[VMRequest any, CCommand any, VMResponse any](ctx *gin.Context, c
 		return
 	}
 
+	sendToMediatorAndGenerateResponse[VMResponse](ctx, controller, statusCode, command)
+}
+
+func ViewHelperUrlEncodedWith[VMRequest any, CCommand mediator.Request, VMResponse any](ctx *gin.Context, controller *controllers.Controller) {
+	var vmRequest VMRequest
+	if err := ctx.ShouldBind(&vmRequest); err != nil {
+		controller.ErrorResponse(ctx, err)
+		return
+	}
+
+	var command CCommand
+	if err := controller.Mapper.Map(vmRequest, &command); err != nil {
+		controller.ErrorResponse(ctx, err)
+		return
+	}
+
+	sendToMediatorAndGenerateResponse[VMResponse](ctx, controller, 0, command)
+}
+
+func sendToMediatorAndGenerateResponse[VMResponse any](ctx *gin.Context, controller *controllers.Controller, statusCode int, command mediator.Request) {
 	response, err := controller.Mediator.Send(ctx, command)
 	if err != nil {
 		controller.ErrorResponse(ctx, err)
