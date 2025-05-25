@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 
 	// Verificações
 	assert.Error(t, err, "Deve ocorrer erro ao criar usuário com email duplicado")
-	assert.Equal(t, "user already exists", err.Error(), "Mensagem de erro incorreta")
+	assert.Equal(t, "usuário já existe", err.Error(), "Mensagem de erro incorreta")
 }
 
 func TestGetUserByEmail(t *testing.T) {

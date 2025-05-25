@@ -3,8 +3,9 @@ package ioc
 import (
 	"reflect"
 
-	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
+	domainrepos "github.com/rkaturabara/flickly/internal/domain/users/repositories"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	userrepos "github.com/rkaturabara/flickly/internal/infra/data/users/repositories"
 )
 
 type Container struct {
@@ -12,11 +13,17 @@ type Container struct {
 }
 
 func NewContainer() *Container {
-	return &Container{
+	container := &Container{
 		services: utilities.NewServiceCollection(),
 	}
+
+	// Registrar o repositório de usuários
+	userRepo := userrepos.NewUserRepository()
+	container.services.AddServiceInstance(reflect.TypeOf((*domainrepos.IUserRepository)(nil)).Elem(), userRepo)
+
+	return container
 }
 
-func (c *Container) GetUserRepository() repositories.IUserRepository {
-	return c.services.GetServiceByType(reflect.TypeOf((*repositories.IUserRepository)(nil)).Elem()).(repositories.IUserRepository)
+func (c *Container) GetUserRepository() domainrepos.IUserRepository {
+	return c.services.GetServiceByType(reflect.TypeOf((*domainrepos.IUserRepository)(nil)).Elem()).(domainrepos.IUserRepository)
 }
