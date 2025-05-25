@@ -3,11 +3,7 @@ package swagger
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"flickly/docs"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"os"
 	"os/exec"
@@ -15,6 +11,11 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rkaturabara/flickly/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // SetupSwagger configura o Swagger no aplicativo
@@ -129,7 +130,7 @@ func regenerarSwagger() {
 
 	// Executar o comando swag com opções para forçar a regeneração
 	fmt.Println("\033[33mGerando nova documentação Swagger...\033[0m")
-	cmd := exec.Command(swagCmd, "init", "-g", "cmd/flickly/main.go", "--parseDependency", "--parseInternal", "--overridesFile", "")
+	cmd := exec.Command(swagCmd, "init", "-g", "cmd/main.go", "--parseDependency", "--parseInternal", "--overridesFile", "")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -214,7 +215,7 @@ func isSwaggerDesatualizado() bool {
 
 	// Lista de arquivos e diretórios a verificar
 	arquivosPrincipais := []string{
-		"cmd/flickly/main.go",
+		"cmd/main.go",
 		"internal/api/flickly/router.go",
 		"internal/api/users/controllers/user_controller.go",
 		"internal/infra/crosscutting/swagger/swagger_config.go",

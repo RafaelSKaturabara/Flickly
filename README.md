@@ -28,7 +28,7 @@ git clone https://github.com/seu-usuario/flickly.git
 cd flickly
 
 # Executar a aplicação
-go run cmd/flickly/main.go
+go run cmd/main.go
 ```
 
 A aplicação estará disponível em `http://localhost:8080`.

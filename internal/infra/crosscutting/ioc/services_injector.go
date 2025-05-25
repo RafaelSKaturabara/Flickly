@@ -1,10 +1,10 @@
 package ioc
 
 import (
-	"flickly/internal/domain/core/mediator"
-	"flickly/internal/domain/users/repositories"
-	"flickly/internal/infra/crosscutting/utilities"
-	infrarepositories "flickly/internal/infra/data/users/repositories"
+	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
+	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
+	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	infrarepositories "github.com/rkaturabara/flickly/internal/infra/data/users/repositories"
 )
 
 func InjectServices(serviceCollection utilities.IServiceCollection) {
