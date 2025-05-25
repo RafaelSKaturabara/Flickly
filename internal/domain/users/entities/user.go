@@ -14,7 +14,7 @@ type User struct {
 	VerifiedEmail bool     `json:"verified_email"`
 	Roles         []string `json:"roles"`
 	AccessToken   string   `json:"-"`
-	RefreshToken  string   `json:"-"`
+	TokenType     string   `json:"token_type"`
 	TokenExpiry   int64    `json:"-"`
 	TokenScopes   []string `json:"-"`
 	ClientID      string   `json:"client_id"`
@@ -90,9 +90,8 @@ func (u *User) RemoveScope(scope string) {
 }
 
 // UpdateOAuthInfo atualiza as informações de OAuth do usuário
-func (u *User) UpdateOAuthInfo(accessToken, refreshToken string, tokenExpiry int64, scopes []string) {
+func (u *User) UpdateOAuthInfo(accessToken string, tokenExpiry int64, scopes []string) {
 	u.AccessToken = accessToken
-	u.RefreshToken = refreshToken
 	u.TokenExpiry = tokenExpiry
 	u.TokenScopes = scopes
 }

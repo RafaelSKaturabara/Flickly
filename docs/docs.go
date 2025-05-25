@@ -54,67 +54,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/oauth/refresh": {
-            "post": {
-                "description": "Gera um novo token de acesso usando o refresh token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "oauth"
-                ],
-                "summary": "Renova o token de acesso",
-                "parameters": [
-                    {
-                        "description": "Refresh token",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RefreshTokenRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Token renovado com sucesso",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Dados inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Token inválido",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Erro interno do servidor",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/oauth/register": {
             "post": {
                 "description": "Cria uma nova conta de usuário no sistema",
@@ -192,7 +131,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Tipo de concessão (password)",
+                        "description": "Tipo de concessão (password ou refresh_token)",
                         "name": "grant_type",
                         "in": "formData",
                         "required": true
@@ -213,17 +152,21 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Nome de usuário (email)",
+                        "description": "Nome de usuário (email) - obrigatório para grant_type=password",
                         "name": "username",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Senha do usuário",
+                        "description": "Senha do usuário - obrigatório para grant_type=password",
                         "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Refresh token - obrigatório para grant_type=refresh_token",
+                        "name": "refresh_token",
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -338,17 +281,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RefreshTokenRequest": {
-            "type": "object",
-            "required": [
-                "refresh_token"
-            ],
-            "properties": {
-                "refresh_token": {
                     "type": "string"
                 }
             }

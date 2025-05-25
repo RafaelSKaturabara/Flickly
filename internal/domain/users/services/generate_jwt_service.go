@@ -29,6 +29,7 @@ func (s *GenerateJWTService) Run(ctx context.Context, entity core.Entity) error 
 	}
 
 	user.AccessToken = token
+	user.TokenType = "Bearer"
 	return nil
 }
 
@@ -38,7 +39,7 @@ func (s *GenerateJWTService) generateJWT(user *entities.User) (string, error) {
 		"email": user.Email,
 		"name":  user.Name,
 		"roles": user.Roles,
-		"exp":   time.Now().Add(time.Hour).Unix(), // Token válido por 1 hora
+		"exp":   time.Now().Add(time.Minute * 15).Unix(), // Token válido por 15 minutos
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -70,11 +70,12 @@ func (c *OAuthHandler) Register(ctx *gin.Context) {
 // @Tags oauth
 // @Accept application/x-www-form-urlencoded
 // @Produce json
-// @Param grant_type formData string true "Tipo de concessão (password)"
+// @Param grant_type formData string true "Tipo de concessão (password ou refresh_token)"
 // @Param client_id formData string true "ID do cliente"
 // @Param client_secret formData string true "Segredo do cliente"
-// @Param username formData string true "Nome de usuário (email)"
-// @Param password formData string true "Senha do usuário"
+// @Param username formData string false "Nome de usuário (email) - obrigatório para grant_type=password"
+// @Param password formData string false "Senha do usuário - obrigatório para grant_type=password"
+// @Param refresh_token formData string false "Refresh token - obrigatório para grant_type=refresh_token"
 // @Param scope formData string false "Escopo do token"
 // @Success 200 {object} viewmodel.TokenResponse "Token gerado com sucesso"
 // @Failure 400 {object} map[string]string "Dados inválidos"
@@ -83,20 +84,4 @@ func (c *OAuthHandler) Register(ctx *gin.Context) {
 // @Router /oauth/token [post]
 func (c *OAuthHandler) Token(ctx *gin.Context) {
 	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
-}
-
-// RefreshToken lida com a renovação do token de acesso
-// @Summary Renova o token de acesso
-// @Description Gera um novo token de acesso usando o refresh token
-// @Tags oauth
-// @Accept json
-// @Produce json
-// @Param request body viewmodel.RefreshTokenRequest true "Refresh token"
-// @Success 200 {object} viewmodel.TokenResponse "Token renovado com sucesso"
-// @Failure 400 {object} map[string]string "Dados inválidos"
-// @Failure 401 {object} map[string]string "Token inválido"
-// @Failure 500 {object} map[string]string "Erro interno do servidor"
-// @Router /oauth/refresh [post]
-func (c *OAuthHandler) RefreshToken(ctx *gin.Context) {
-	helpers.ViewHelperWith[viewmodel.RefreshTokenRequest, command_handlers.RefreshTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
 }

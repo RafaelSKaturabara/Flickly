@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rkaturabara/flickly/internal/application/commons/middleware"
 	"github.com/rkaturabara/flickly/internal/application/users/handlers"
+	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
 )
 
@@ -25,12 +26,11 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 	{
 		// Rotas públicas
 		authGroup.POST("/register", oauthController.Register)
-		authGroup.POST("/token", oauthController.Token)
-		authGroup.POST("/refresh", oauthController.RefreshToken)
+		authGroup.POST("/token", jwtMiddleware.RefreshToken(), oauthController.Token)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {
-			user, _ := c.Get("user")
+			user, _ := c.Request.Context().Value(middleware.UserContextKey).(*entities.User)
 			c.JSON(200, gin.H{"user": user})
 		})
 

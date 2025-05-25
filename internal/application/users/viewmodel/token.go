@@ -11,11 +11,11 @@ type TokenResponse struct {
 }
 
 type TokenRequest struct {
-	GrantType    string `form:"grant_type" binding:"required"`
+	GrantType    string `form:"grant_type" binding:"required,oneof=password refresh_token"`
 	ClientID     string `form:"client_id" binding:"required"`
 	ClientSecret string `form:"client_secret" binding:"required"`
-	Username     string `form:"username" binding:"required"`
-	Password     string `form:"password" binding:"required"`
+	Username     string `form:"username" binding:"required_if=GrantType password"`
+	Password     string `form:"password" binding:"required_if=GrantType password"`
 	Scope        string `form:"scope"`
 }
 

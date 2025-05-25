@@ -43,7 +43,7 @@ func ViewHelperWith[VMRequest any, CCommand mediator.Request, VMResponse any](ct
 }
 
 func sendToMediatorAndGenerateResponse[VMResponse any](ctx *gin.Context, controller *handlers.Handler, statusCode int, command mediator.Request) {
-	response, err := controller.Mediator.Send(ctx, command)
+	response, err := controller.Mediator.Send(ctx.Request.Context(), command)
 	if err != nil {
 		controller.ErrorResponse(ctx, err)
 		return

@@ -3,8 +3,10 @@ package command_handlers
 import (
 	"context"
 
+	"github.com/rkaturabara/flickly/internal/application/commons/middleware"
 	"github.com/rkaturabara/flickly/internal/domain/core"
 	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
+	"github.com/rkaturabara/flickly/internal/domain/users/entities"
 	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
 	"github.com/rkaturabara/flickly/internal/domain/users/services"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
@@ -35,17 +37,26 @@ func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request medi
 	command := request.(CreateTokenCommand)
 
 	var err error
+	var user *entities.User
 
-	// Busca o usuário pelo email
-	user, err := h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Username, command.Password, command.ClientID, command.ClientSecret)
-	if err != nil || user == nil {
-		// corrigir erro na consulta
-		return nil, core.ErrInvalidCredentials(err)
+	if command.GrantType == "password" {
+		// Busca o usuário pelo email
+		user, err = h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Username, command.Password, command.ClientID, command.ClientSecret)
+		if err != nil || user == nil {
+			// corrigir erro na consulta
+			return nil, core.ErrInvalidCredentials(err)
+		}
+	} else if command.GrantType == "refresh_token" {
+		userJwt, ok := c.Value(middleware.UserContextKey).(*entities.User)
+		user, err = h.userRepository.GetUserByID(c, userJwt.GetID())
+		if !ok || user == nil {
+			// corrigir erro na consulta
+			return nil, core.ErrInvalidCredentials(err)
+		}
 	}
 
 	var serviceRules []core.Service
 	serviceRules = append(serviceRules, services.NewGenerateJWTService())
-	serviceRules = append(serviceRules, services.NewGenerateRefreshTokenService())
 
 	for _, service := range serviceRules {
 		if service.AbleToRun(c, user) {

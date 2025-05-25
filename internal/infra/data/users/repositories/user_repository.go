@@ -108,7 +108,6 @@ func (r *UserRepository) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UU
 	}
 
 	user.AccessToken = accessToken
-	user.RefreshToken = refreshToken
 	user.TokenExpiry = tokenExpiry
 	user.TokenScopes = scopes
 
