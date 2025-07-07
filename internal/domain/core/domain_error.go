@@ -49,6 +49,9 @@ func (b *DomainErrorBuilder) Build() *DomainError {
 }
 
 var (
+	DoNotUseThisGenericError = func(err error) *DomainError {
+		return NewDomainErrorBuilder(err).WithMessage("Erro genérico").WithErrorCode(0).Build()
+	}
 	ErrUserAlreadyExist = func(err error) *DomainError {
 		return NewDomainErrorBuilder(err).WithMessage("Usuário já cadastrado").WithErrorCode(1).Build()
 	}

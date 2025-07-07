@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Servidor iniciando em http://localhost:8080")
+	fmt.Println("Servidor iniciando em http://localhost:8090")
 
 	// Configurações básicas do Swagger (apenas para permitir sua geração)
 	docs.SwaggerInfo.Title = "Flickly API"
@@ -39,8 +39,9 @@ func main() {
 	// Configuração do Swagger usando o novo pacote
 	swaggerConfig.SetupSwagger(router)
 
-	// Inicia o servidor na porta 8080
-	err := router.Run(":8080")
+	// Inicia o servidor na porta 8090
+	
+	err := router.Run(":8090")
 	if err != nil {
 		return
 	}

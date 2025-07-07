@@ -11,6 +11,8 @@ type Entity interface {
 	GetCreatedAt() time.Time
 	GetUpdateAt() *time.Time
 	GetDeletedAt() *time.Time
+	IsValid() bool
+	GetErrors() *map[string]string
 }
 
 type BaseEntity struct {
@@ -18,6 +20,7 @@ type BaseEntity struct {
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdateAt  *time.Time `json:"updateAt,omitempty"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
+	Errors    *map[string]string `json:"-"`
 }
 
 func (e *BaseEntity) GetID() uuid.UUID {
@@ -34,6 +37,10 @@ func (e *BaseEntity) GetUpdateAt() *time.Time {
 
 func (e *BaseEntity) GetDeletedAt() *time.Time {
 	return e.DeletedAt
+}
+
+func (e *BaseEntity) GetErrors() *map[string]string {
+	return e.Errors
 }
 
 func NewBaseEntity() BaseEntity {

@@ -102,3 +102,7 @@ func (u *User) UpdateProfile(name, givenName, familyName, picture string, verifi
 	u.Picture = picture
 	u.VerifiedEmail = verifiedEmail
 }
+
+func (u *User) IsValid() bool {
+	return true
+}
