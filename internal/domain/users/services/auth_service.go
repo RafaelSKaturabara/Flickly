@@ -1,6 +1,4 @@
-package services
-
-var dfsdf = 0
+//package services
 
 // import (
 // 	"context"
