@@ -1,6 +1,8 @@
 package entities
 
-import "flickly/internal/domain/core"
+import (
+	"github.com/rkaturabara/flickly/internal/domain/core"
+)
 
 type PocRelation struct {
 	core.Entity

@@ -4,12 +4,12 @@ import "reflect"
 
 // IServiceCollection interface principal sem genéricos
 type IServiceCollection interface {
-	AddServiceInstance(serviceType reflect.Type, implementation interface{}) IServiceCollection
-	GetServiceByType(serviceType reflect.Type) interface{}
+	AddServiceInstance(serviceType reflect.Type, implementation any) IServiceCollection
+	GetServiceByType(serviceType reflect.Type) any
 }
 
 type serviceCollection struct {
-	services map[reflect.Type]interface{}
+	services map[reflect.Type]any
 }
 
 func NewServiceCollection() IServiceCollection {
@@ -19,7 +19,7 @@ func NewServiceCollection() IServiceCollection {
 }
 
 // AddServiceInstance implementa a interface não-genérica
-func (c *serviceCollection) AddServiceInstance(serviceType reflect.Type, implementation interface{}) IServiceCollection {
+func (c *serviceCollection) AddServiceInstance(serviceType reflect.Type, implementation any) IServiceCollection {
 	implementationValue := reflect.ValueOf(implementation)
 
 	if !implementationValue.Type().Implements(serviceType) {
@@ -31,7 +31,7 @@ func (c *serviceCollection) AddServiceInstance(serviceType reflect.Type, impleme
 }
 
 // GetServiceByType implementa a interface não-genérica
-func (c *serviceCollection) GetServiceByType(serviceType reflect.Type) interface{} {
+func (c *serviceCollection) GetServiceByType(serviceType reflect.Type) any {
 	if service, ok := c.services[serviceType]; ok {
 		return service
 	}

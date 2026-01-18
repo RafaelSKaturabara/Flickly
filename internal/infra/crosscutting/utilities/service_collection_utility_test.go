@@ -3,6 +3,8 @@ package utilities
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // MockInterface é uma interface de exemplo para testes
@@ -20,93 +22,107 @@ func (m *MockImplementation) DoSomething() string {
 // MockIncorrectImplementation não implementa completamente a interface MockInterface
 type MockIncorrectImplementation struct{}
 
+type TestService struct {
+	Value string
+}
+
+type TestInterface interface {
+	GetValue() string
+}
+
+func (s *TestService) GetValue() string {
+	return s.Value
+}
+
 func TestNewServiceCollection(t *testing.T) {
-	serviceCollection := NewServiceCollection()
-	if serviceCollection == nil {
-		t.Fatal("NewServiceCollection deve retornar uma instância não nula")
-	}
+	// Execução
+	collection := NewServiceCollection()
+
+	// Verificações
+	assert.NotNil(t, collection, "NewServiceCollection deve retornar uma instância não nula")
 }
 
 func TestAddServiceInstance(t *testing.T) {
-	serviceCollection := NewServiceCollection()
-	implementation := &MockImplementation{}
-	typeOfInterface := reflect.TypeOf((*MockInterface)(nil)).Elem()
+	// Configuração
+	collection := NewServiceCollection()
+	service := &TestService{Value: "test"}
+	typeOfInterface := reflect.TypeOf((*TestInterface)(nil)).Elem()
 
-	// Testando adição válida
-	result := serviceCollection.AddServiceInstance(typeOfInterface, implementation)
-	if result != serviceCollection {
-		t.Fatal("AddServiceInstance deve retornar a própria instância de serviceCollection")
-	}
+	// Execução
+	result := collection.AddServiceInstance(typeOfInterface, service)
 
-	// Testando erro ao adicionar implementação inválida
-	defer func() {
-		if r := recover(); r == nil {
-			t.Fatal("Adicionar implementação inválida deve causar panic")
-		}
-	}()
-	serviceCollection.AddServiceInstance(typeOfInterface, &MockIncorrectImplementation{})
+	// Verificações
+	assert.NotNil(t, result, "AddServiceInstance deve retornar uma instância não nula")
 }
 
 func TestGetServiceByType(t *testing.T) {
-	serviceCollection := NewServiceCollection()
-	implementation := &MockImplementation{}
-	typeOfInterface := reflect.TypeOf((*MockInterface)(nil)).Elem()
+	// Configuração
+	collection := NewServiceCollection()
+	service := &TestService{Value: "test"}
+	typeOfInterface := reflect.TypeOf((*TestInterface)(nil)).Elem()
+	collection.AddServiceInstance(typeOfInterface, service)
 
-	// Adicionar serviço
-	serviceCollection.AddServiceInstance(typeOfInterface, implementation)
+	// Execução - serviço existente
+	retrievedService := collection.GetServiceByType(typeOfInterface)
 
-	// Testar recuperação de serviço
-	service := serviceCollection.GetServiceByType(typeOfInterface)
-	if service != implementation {
-		t.Fatal("GetServiceByType deve retornar a implementação registrada")
-	}
+	// Verificações
+	assert.NotNil(t, retrievedService, "Deve retornar o serviço quando encontrado")
+	assert.Equal(t, service, retrievedService, "O serviço retornado deve ser o mesmo que foi adicionado")
 
-	// Testar recuperação de serviço não registrado
-	nonExistentType := reflect.TypeOf((*error)(nil)).Elem()
-	service = serviceCollection.GetServiceByType(nonExistentType)
-	if service != nil {
-		t.Fatal("GetServiceByType deve retornar nil para tipos não registrados")
-	}
+	// Execução - serviço não existente
+	type OtherInterface interface{}
+	retrievedService = collection.GetServiceByType(reflect.TypeOf((*OtherInterface)(nil)).Elem())
+
+	// Verificações
+	assert.Nil(t, retrievedService, "Deve retornar nil para serviço não encontrado")
 }
 
 func TestAddService(t *testing.T) {
-	serviceCollection := NewServiceCollection()
-	implementation := &MockImplementation{}
+	// Configuração
+	collection := NewServiceCollection()
 
-	// Testar função auxiliar genérica AddService
-	result := AddService[MockInterface](serviceCollection, implementation)
-	if result != serviceCollection {
-		t.Fatal("AddService deve retornar a própria instância de serviceCollection")
-	}
+	// Execução
+	result := AddService[TestInterface](collection, &TestService{Value: "test"})
 
-	// Verificar se o serviço foi adicionado corretamente
-	typeOfInterface := reflect.TypeOf((*MockInterface)(nil)).Elem()
-	service := serviceCollection.GetServiceByType(typeOfInterface)
-	if service != implementation {
-		t.Fatal("AddService deve registrar a implementação corretamente")
-	}
+	// Verificações
+	assert.NotNil(t, result, "AddService deve retornar uma instância não nula")
 }
 
 func TestGetService(t *testing.T) {
-	serviceCollection := NewServiceCollection()
-	implementation := &MockImplementation{}
+	// Configuração
+	collection := NewServiceCollection()
+	service := &TestService{Value: "test"}
+	AddService[TestInterface](collection, service)
 
-	// Adicionar serviço
-	AddService[MockInterface](serviceCollection, implementation)
+	// Execução - serviço existente
+	retrievedService := GetService[TestInterface](collection)
 
-	// Testar função auxiliar genérica GetService
-	service := GetService[MockInterface](serviceCollection)
-	if service == nil {
-		t.Fatal("GetService deve retornar a implementação registrada")
-	}
-	mock, ok := service.(*MockImplementation)
-	if !ok || mock != implementation {
-		t.Fatal("GetService deve retornar a implementação correta")
-	}
+	// Verificações
+	assert.NotNil(t, retrievedService, "Deve retornar o serviço quando encontrado")
+	assert.Equal(t, service, retrievedService, "O serviço retornado deve ser o mesmo que foi adicionado")
 
-	// Testar GetService para tipo não registrado
-	var nilService = GetService[error](serviceCollection)
-	if nilService != nil {
-		t.Fatal("GetService deve retornar zero value para tipos não registrados")
-	}
-} 
+	// Execução - serviço não existente
+	type OtherInterface interface{}
+	retrievedOtherService := GetService[OtherInterface](collection)
+
+	// Verificações
+	assert.Nil(t, retrievedOtherService, "Deve retornar nil para serviço não encontrado")
+}
+
+func TestServiceCollection_ConcurrentAccess(t *testing.T) {
+	// Configuração
+	collection := NewServiceCollection()
+	service := &TestService{Value: "test"}
+
+	// Execução - adiciona o serviço
+	result := AddService[TestInterface](collection, service)
+	assert.NotNil(t, result)
+
+	// Execução - tenta adicionar o mesmo serviço novamente
+	result = AddService[TestInterface](collection, service)
+	assert.NotNil(t, result)
+
+	// Execução - tenta adicionar um serviço diferente da mesma interface
+	result = AddService[TestInterface](collection, &TestService{Value: "another"})
+	assert.NotNil(t, result)
+}

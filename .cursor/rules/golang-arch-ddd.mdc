@@ -1,0 +1,93 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Padrão de Arquitetura - Projeto Flickly
+
+> **Nota:** Este projeto **não possui a camada application**. Originalmente, a arquitetura DDD tradicional previa essa camada, mas com a evolução para o padrão CQRS, ela foi removida. Agora, os handlers de comandos e queries assumem o papel dos casos de uso, tornando a arquitetura mais enxuta e alinhada com práticas modernas.
+
+---
+
+## Visão Geral da Arquitetura
+
+O projeto segue princípios de Domain-Driven Design (DDD), CQRS, SOLID, Clean Code e MVVM para garantir organização, escalabilidade e manutenibilidade.
+
+---
+
+## Camadas
+
+- **Domain:** Contém entidades, agregados, value objects e regras de negócio.
+- **Infrastructure:** Implementações técnicas (repositórios, serviços externos, etc).
+- **API:** Controllers, handlers, endpoints expostos e ViewModels.
+
+---
+
+## Organização dos Diretórios
+
+- `internal/domain`: Entidades, agregados, value objects, interfaces de repositório.
+- `internal/infra`: Implementações técnicas (repositórios, serviços, crosscutting).
+- `cmd`: Ponto de entrada da aplicação (main.go).
+- `internal/api`: Controllers, rotas, viewmodels.
+
+---
+
+## Padrões e Princípios Utilizados
+
+### DDD (Domain-Driven Design)
+Foco em modelar o domínio do negócio de forma fiel, separando responsabilidades em camadas bem definidas. O objetivo é garantir que o código reflita o negócio real, facilitando manutenção, testes e evolução.
+
+### CQRS (Command Query Responsibility Segregation)
+Separa as operações de leitura (Query) das de escrita (Command):
+- **Commands:** Alteram o estado do sistema (criar, atualizar, deletar).
+- **Queries:** Apenas consultam dados, sem alterar o estado.
+
+Com CQRS, os handlers de comandos e de consultas assumem o papel dos casos de uso, orquestrando a lógica de negócio diretamente e interagindo com o domínio e a infraestrutura conforme necessário. Assim, a separação de responsabilidades fica mais clara e a arquitetura mais enxuta, eliminando a necessidade de uma camada intermediária de aplicação.
+
+**Fluxo típico:**
+- API → Handler (Command/Query) → Domain/Infra
+
+### SOLID
+Cinco princípios para tornar o código mais flexível, compreensível e fácil de manter:
+- **S** (Single Responsibility Principle): Cada classe/módulo deve ter uma única responsabilidade.
+- **O** (Open/Closed Principle): Aberto para extensão, fechado para modificação.
+- **L** (Liskov Substitution Principle): Subtipos devem ser substituíveis por seus tipos base.
+- **I** (Interface Segregation Principle): Muitas interfaces específicas são melhores que uma interface única e genérica.
+- **D** (Dependency Inversion Principle): Dependa de abstrações, não de implementações concretas.
+
+### Clean Code
+Boas práticas para escrever código limpo, legível e fácil de entender:
+- Nomes claros para variáveis, funções e classes.
+- Funções pequenas e com uma única responsabilidade.
+- Comentários apenas quando necessário (o código deve ser autoexplicativo).
+- Remover código morto ou duplicado.
+- Testes automatizados para garantir qualidade.
+
+### MVVM (Model-View-ViewModel)
+O padrão MVVM é utilizado especialmente na camada de API:
+- **Model:** Entidades e objetos de domínio (camada Domain).
+- **ViewModel:** Estruturas intermediárias para transportar dados entre a API e o domínio, adaptando o formato das informações para as necessidades da interface ou do consumidor da API. Os ViewModels ficam em `internal/api/*/viewmodels`.
+- **View:** No contexto de APIs, corresponde às respostas HTTP (JSON, etc) enviadas ao cliente.
+
+O uso de ViewModels garante que a API não exponha diretamente as entidades do domínio, promovendo desacoplamento, segurança e flexibilidade na evolução dos contratos públicos da aplicação.
+
+**Exemplo de fluxo:**
+- Controller recebe requisição → converte para ViewModel → chama domínio/handler → recebe resultado → converte para ViewModel de resposta → retorna ao cliente.
+
+---
+
+## Convenções Gerais
+
+- Use interfaces para dependências entre camadas.
+- Não acesse diretamente a infraestrutura a partir do domínio.
+- Use DTOs/ViewModels para comunicação entre camadas.
+
+---
+
+## Observação sobre a camada Application
+
+Nesta arquitetura, a camada **application** foi removida devido à adoção do padrão **CQRS**. Os handlers de comandos (Commands) e de consultas (Queries) assumem o papel dos casos de uso, tornando a arquitetura mais enxuta e alinhada com práticas modernas.
+
+---
+
+*Este arquivo serve como referência para desenvolvedores entenderem e seguirem o padrão arquitetural adotado neste projeto.*

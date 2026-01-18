@@ -54,9 +54,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/oauth/register": {
+            "post": {
+                "description": "Cria uma nova conta de usuário no sistema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "oauth"
+                ],
+                "summary": "Registra um novo usuário",
+                "parameters": [
+                    {
+                        "description": "Dados do usuário para registro",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Usuário registrado com sucesso",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Usuário já existe",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/oauth/token": {
             "post": {
-                "description": "Autentica um usuário e retorna um token de acesso",
+                "description": "Gera um token de acesso usando OAuth2",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -64,13 +125,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "oauth"
                 ],
-                "summary": "Gerar token de autenticação",
+                "summary": "Autentica um usuário",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Tipo de concessão (password)",
+                        "description": "Tipo de concessão (password ou refresh_token)",
                         "name": "grant_type",
                         "in": "formData",
                         "required": true
@@ -91,30 +152,61 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "E-mail do usuário",
+                        "description": "Nome de usuário (email) - obrigatório para grant_type=password",
                         "name": "username",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Senha do usuário",
+                        "description": "Senha do usuário - obrigatório para grant_type=password",
                         "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Refresh token - obrigatório para grant_type=refresh_token",
+                        "name": "refresh_token",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Escopo do token",
+                        "name": "scope",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Token gerado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/flickly_internal_api_users_viewmodels.TokenResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "Credenciais inválidas",
                         "schema": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -140,7 +232,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/flickly_internal_api_users_viewmodels.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest"
                         }
                     }
                 ],
@@ -148,7 +240,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/flickly_internal_api_users_viewmodels.CreateUserResponse"
+                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -162,7 +254,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "flickly_internal_api_users_viewmodels.CreateUserRequest": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -176,7 +268,7 @@ const docTemplate = `{
                 }
             }
         },
-        "flickly_internal_api_users_viewmodels.CreateUserResponse": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -193,7 +285,35 @@ const docTemplate = `{
                 }
             }
         },
-        "flickly_internal_api_users_viewmodels.TokenResponse": {
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_domain_users_entities.User"
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -202,8 +322,55 @@ const docTemplate = `{
                 "expires_in": {
                     "type": "integer"
                 },
+                "scope": {
+                    "type": "string"
+                },
                 "token_type": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_rkaturabara_flickly_internal_domain_users_entities.User": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "type": "string"
+                },
+                "client_secret": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "token_type": {
+                    "type": "string"
+                },
+                "updateAt": {
+                    "type": "string"
+                },
+                "verified_email": {
+                    "type": "boolean"
                 }
             }
         }

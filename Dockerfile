@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Construir o aplicativo
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/main ./cmd/flickly
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/main ./cmd
 
 # Estágio final
 FROM alpine:latest

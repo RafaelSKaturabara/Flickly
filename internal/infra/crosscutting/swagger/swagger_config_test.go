@@ -27,7 +27,7 @@ func isRootProjectDir() bool {
 	if _, err := os.Stat("go.mod"); err != nil {
 		return false
 	}
-	if _, err := os.Stat("cmd/flickly/main.go"); err != nil {
+	if _, err := os.Stat("cmd/main.go"); err != nil {
 		return false
 	}
 	return true
@@ -397,7 +397,7 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 
 	// Criar todos os diretórios necessários
 	diretorios := []string{
-		"cmd/flickly",
+		"cmd",
 		"internal/api/flickly",
 		"internal/api/users/controllers",
 		"internal/infra/crosscutting/swagger",
@@ -416,8 +416,8 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 
 	// Criar arquivos principais com conteúdo mínimo
 	arquivos := map[string]string{
-		"cmd/flickly/main.go":                                   "package main\nfunc main(){}",
-		"internal/api/flickly/router.go":                        "package flickly\nfunc Startup(){}",
+		"cmd/main.go":                    "package main\nfunc main(){}",
+		"internal/api/flickly/router.go": "package flickly\nfunc Startup(){}",
 		"internal/api/users/controllers/user_controller.go":     "package controllers\nfunc NewUserController(){}",
 		"internal/infra/crosscutting/swagger/swagger_config.go": "package swagger\nfunc SetupSwagger(){}",
 	}

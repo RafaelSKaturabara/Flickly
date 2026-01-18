@@ -2,9 +2,10 @@
 
 # Variáveis
 BINARY_NAME=flickly
-MAIN_PATH=cmd/flickly/main.go
+MAIN_PATH=cmd/main.go
 GO_PATH=$(shell go env GOPATH)
 SWAG_PATH=$(shell which swag 2>/dev/null || echo "$(GOPATH)/bin/swag")
+DEBUG_BINARY_NAME=flickly-debug
 
 # Instalar dependências
 deps:
@@ -83,6 +84,17 @@ build-run: build
 	@echo "Iniciando servidor..."
 	./$(BINARY_NAME)
 
+# Construir o binário em modo debug
+build-debug: swagger
+	@echo "Construindo aplicação em modo debug..."
+	go build -gcflags="all=-N -l" -o $(DEBUG_BINARY_NAME) $(MAIN_PATH)
+	@echo "Binário debug $(DEBUG_BINARY_NAME) criado."
+
+# Executar em modo debug
+run-debug: build-debug
+	@echo "Iniciando servidor em modo debug..."
+	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./$(DEBUG_BINARY_NAME)
+
 # Ajuda
 help:
 	@echo "Comandos disponíveis:"
@@ -93,6 +105,8 @@ help:
 	@echo "  make swagger       - Gerar documentação Swagger"
 	@echo "  make build         - Construir o binário"
 	@echo "  make build-run     - Construir e executar o binário"
+	@echo "  make build-debug   - Construir o binário em modo debug"
+	@echo "  make run-debug     - Construir e executar em modo debug"
 	@echo "  make clean         - Limpar arquivos gerados"
 	@echo "  make clean-swagger - Limpar apenas arquivos do Swagger"
 	@echo "  make clean-all     - Limpar todos os arquivos gerados"
