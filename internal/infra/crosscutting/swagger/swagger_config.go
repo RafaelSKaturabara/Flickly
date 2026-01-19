@@ -50,7 +50,7 @@ func SetupSwagger(router *gin.Engine) {
 	docs.SwaggerInfo.Title = "Flickly API"
 	docs.SwaggerInfo.Description = "API do projeto Flickly (Atualizado em: " + time.Now().Format(time.RFC3339) + ")"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = "localhost:8090"
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
@@ -277,7 +277,7 @@ func verificarSwaggerExistente() {
 // abrirSwaggerNoBrowser abre o Swagger UI no navegador padrão
 func abrirSwaggerNoBrowser(timestamp string) {
 	time.Sleep(2 * time.Second)
-	swaggerURL := fmt.Sprintf("http://localhost:8080/swagger/index.html?v=%s", timestamp)
+	swaggerURL := fmt.Sprintf("http://localhost:8090/swagger/index.html?v=%s", timestamp)
 	fmt.Printf("Abrindo Swagger UI em: %s\n", swaggerURL)
 	err := abrirNavegador(swaggerURL)
 	if err != nil {

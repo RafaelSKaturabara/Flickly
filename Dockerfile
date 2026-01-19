@@ -25,7 +25,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/main /app/main
 
 # Porta da aplicação
-EXPOSE 8080
+EXPOSE 8090
 
 # Comando para executar a aplicação
 ENTRYPOINT ["/app/main"] 

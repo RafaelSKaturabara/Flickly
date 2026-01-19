@@ -2,7 +2,7 @@
 // @version 1.0
 // @description API do projeto Flickly
 // @license.name MIT
-// @host localhost:8080
+// @host localhost:8090
 // @BasePath /
 // @schemes http https
 package main
@@ -14,6 +14,7 @@ import (
 	"github.com/rkaturabara/flickly/docs"
 	"github.com/rkaturabara/flickly/internal/application/flickly"
 	"github.com/rkaturabara/flickly/internal/application/users"
+	"github.com/rkaturabara/flickly/internal/application/simplerule"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/ioc"
 	swaggerConfig "github.com/rkaturabara/flickly/internal/infra/crosscutting/swagger"
 	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
@@ -34,6 +35,7 @@ func main() {
 	ioc.InjectMediatorHandlers(serviceCollection)
 
 	users.Startup(router, serviceCollection)
+	simplerule.Startup(router, serviceCollection)
 	flickly.Startup(router)
 
 	// Configuração do Swagger usando o novo pacote
