@@ -36,7 +36,7 @@ func (r *GormRepository[T]) Find(query func(T) bool) ([]T, error) {
 	return results, nil
 }
 
-func (r *GormRepository[T]) Create(id uuid.UUID, entity T) error {
+func (r *GormRepository[T]) Create(entity T) error {
 	// O GORM gerencia a transação de escrita (Write)
 	return r.db.Save(&entity).Error
 }
