@@ -3,11 +3,11 @@ package command_handlers
 import (
 	"context"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/application/users/services"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core/mediator"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/services"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
 )

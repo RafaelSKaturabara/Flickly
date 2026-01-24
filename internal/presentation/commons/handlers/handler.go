@@ -38,7 +38,7 @@ func (c *Handler) ErrorResponse(ctx *gin.Context, err error) {
 	if errors.As(err, &domainError) {
 		var errorResponse view_model.ErrorResponse
 		if errMap := c.Mapper.Map(domainError, &errorResponse); errMap != nil {
-			ctx.JSON(http.StatusTeapot, gin.H{
+			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": errMap.Error(),
 			})
 			return

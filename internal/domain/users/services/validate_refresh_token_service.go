@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
+	"github.com/google/uuid"
 )
 
 type ValidateRefreshTokenService struct {
@@ -25,24 +25,18 @@ func (s *ValidateRefreshTokenService) Run(ctx context.Context, entity core.Entit
 }
 
 func (s *ValidateRefreshTokenService) ValidateRefreshToken(tokenString string) (uuid.UUID, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("método de assinatura inesperado: %v", token.Header["alg"])
-		}
-		return []byte("s.jwtSecret"), nil
-	})
-
+	claims, err := utilities.ValidateToken(tokenString, "s.jwtSecret")
 	if err != nil {
 		return uuid.Nil, err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userID, err := uuid.Parse(claims["user_id"].(string))
+	if userIDStr, ok := claims["user_id"].(string); ok {
+		userID, err := uuid.Parse(userIDStr)
 		if err != nil {
 			return uuid.Nil, err
 		}
 		return userID, nil
 	}
 
-	return uuid.Nil, fmt.Errorf("token inválido")
+	return uuid.Nil, fmt.Errorf("token inválido: user_id não encontrado")
 }
