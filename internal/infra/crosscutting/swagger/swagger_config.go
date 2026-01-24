@@ -80,29 +80,29 @@ func SetupSwagger(router *gin.Engine) {
 	go abrirSwaggerNoBrowser(timestamp)
 }
 func regenerarSwagger() {
-	// 1. Pegar o caminho absoluto da raiz onde o projeto está
-	// No seu caso, o log diz que é D:\repos\Go\Flickly
 	basePath, _ := os.Getwd()
-
-	// 2. Usar caminho relativo para o main.go
-	// Isso é o padrão esperado pelo swag quando rodado da raiz
 	mainPath := filepath.Join("cmd", "main.go")
 
-	fmt.Printf("\033[33mUsando caminho relativo: %s\033[0m\n", mainPath)
+	fmt.Println("\033[33m[Swagger] Atualizando documentação automaticamente...\033[0m")
 
-	// 3. Executar o swag usando o caminho absoluto no argumento -g
-	// Importante: Tiramos o "cmd/" do argumento pois o mainPath já é o caminho completo
-	cmd := exec.Command("swag", "init", "-g", mainPath, "--parseDependency", "--parseInternal")
+	// Usamos 'go run' com a URL do repositório para ser 100% portátil (Style .NET)
+	// O parâmetro '-d ./' diz ao gerador para procurar rotas em todo o projeto.
+	cmd := exec.Command("go", "run", "github.com/swaggo/swag/cmd/swag@latest", "init",
+		"-g", mainPath,
+		"-d", "./",
+		"--parseDependency",
+		"--parseInternal",
+		"--parseDepth", "3",
+		"--propertyStrategy", "camelcase")
 
-	// Garantimos que ele rode na raiz
 	cmd.Dir = basePath
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("\033[31mErro fatal: %v\033[0m\n", err)
+		fmt.Printf("\033[31m[Swagger] Erro na geração automática: %v\033[0m\n", err)
 	} else {
-		fmt.Println("\033[32mSucesso! Documentação gerada.\033[0m")
+		fmt.Println("\033[32m[Swagger] OK! Documentação atualizada com sucesso.\033[0m")
 	}
 }
 
