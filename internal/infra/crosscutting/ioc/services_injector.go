@@ -1,13 +1,13 @@
 package ioc
 
 import (
-	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
-	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
-	simpleRuleIRepositories"github.com/rkaturabara/flickly/internal/domain/simplerule/repositories"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
-	infrarepositories "github.com/rkaturabara/flickly/internal/infra/data/users/repositories"
-	simpleRuleRepositories "github.com/rkaturabara/flickly/internal/infra/data/simplerule/repositories"
-	"github.com/rkaturabara/flickly/internal/infra/data/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core/mediator"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	simpleRuleIRepositories"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
+	infrarepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/repositories"
+	simpleRuleRepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
 )
 
 func InjectServices(serviceCollection utilities.IServiceCollection) {

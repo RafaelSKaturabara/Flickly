@@ -1,8 +1,8 @@
 package ioc
 
 import (
-	"github.com/rkaturabara/flickly/internal/application/commons/auto_mapper"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/auto_mapper"
 )
 
 func InitAutomapper(serviceCollection utilities.IServiceCollection) {

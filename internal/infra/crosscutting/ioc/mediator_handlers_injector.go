@@ -1,10 +1,10 @@
 package ioc
 
 import (
-	"github.com/rkaturabara/flickly/internal/domain/core/mediator"
-	"github.com/rkaturabara/flickly/internal/domain/users/command_handlers"
-	simpleRuleCommandHandlers "github.com/rkaturabara/flickly/internal/domain/simplerule/commandhandlers"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	simpleRuleCommandHandlers "github.com/RafaelSKaturabara/Flickly/internal/application/simplerule/handlers"
+	command_handlers "github.com/RafaelSKaturabara/Flickly/internal/application/users/handlers"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core/mediator"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 )
 
 func InjectMediatorHandlers(serviceCollection utilities.IServiceCollection) {

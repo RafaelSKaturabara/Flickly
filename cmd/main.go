@@ -11,13 +11,13 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rkaturabara/flickly/docs"
-	"github.com/rkaturabara/flickly/internal/application/flickly"
-	"github.com/rkaturabara/flickly/internal/application/users"
-	"github.com/rkaturabara/flickly/internal/application/simplerule"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/ioc"
-	swaggerConfig "github.com/rkaturabara/flickly/internal/infra/crosscutting/swagger"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/docs"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/ioc"
+	swaggerConfig "github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/swagger"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/flickly"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/simplerule"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/users"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 	swaggerConfig.SetupSwagger(router)
 
 	// Inicia o servidor na porta 8090
-	
+
 	err := router.Run(":8090")
 	if err != nil {
 		return

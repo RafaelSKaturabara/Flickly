@@ -1,6 +1,6 @@
 package entities
 
-import "github.com/rkaturabara/flickly/internal/domain/core"
+import "github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 
 type Category struct {
 	core.BaseEntity

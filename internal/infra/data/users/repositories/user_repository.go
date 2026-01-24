@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/rkaturabara/flickly/internal/domain/users/entities"
-	"github.com/rkaturabara/flickly/internal/domain/users/repositories"
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 )
 
 type UserRepository struct {

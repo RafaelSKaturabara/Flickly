@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RafaelSKaturabara/Flickly/docs"
 	"github.com/gin-gonic/gin"
-	"github.com/rkaturabara/flickly/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -79,66 +79,30 @@ func SetupSwagger(router *gin.Engine) {
 	// Abrir o Swagger no navegador após 2 segundos
 	go abrirSwaggerNoBrowser(timestamp)
 }
-
-// regenerarSwagger executa o comando para regenerar a documentação do Swagger
 func regenerarSwagger() {
-	// Detectar o comando do swag
-	swagCmd := ""
-	if commandExists("swag") {
-		swagCmd = "swag"
-	} else if envGoPath := os.Getenv("GOPATH"); envGoPath != "" {
-		possiblePath := fmt.Sprintf("%s/bin/swag", envGoPath)
-		if fileExists(possiblePath) {
-			swagCmd = possiblePath
-		}
-	} else if goPath, err := exec.Command("go", "env", "GOPATH").Output(); err == nil {
-		possiblePath := fmt.Sprintf("%s/bin/swag", strings.TrimSpace(string(goPath)))
-		if fileExists(possiblePath) {
-			swagCmd = possiblePath
-		}
-	}
+	// 1. Pegar o caminho absoluto da raiz onde o projeto está
+	// No seu caso, o log diz que é D:\repos\Go\Flickly
+	basePath, _ := os.Getwd()
 
-	if swagCmd == "" {
-		fmt.Println("\033[31mErro: Não foi possível encontrar o comando swag. Instalando...\033[0m")
-		cmd := exec.Command("go", "install", "github.com/swaggo/swag/cmd/swag@latest")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			fmt.Printf("\033[31mErro ao instalar swag: %v\033[0m\n", err)
-			return
-		}
+	// 2. Usar caminho relativo para o main.go
+	// Isso é o padrão esperado pelo swag quando rodado da raiz
+	mainPath := filepath.Join("cmd", "main.go")
 
-		// Verificar novamente após instalação
-		if commandExists("swag") {
-			swagCmd = "swag"
-		} else if goPath, err := exec.Command("go", "env", "GOPATH").Output(); err == nil {
-			possiblePath := fmt.Sprintf("%s/bin/swag", strings.TrimSpace(string(goPath)))
-			if fileExists(possiblePath) {
-				swagCmd = possiblePath
-			} else {
-				fmt.Println("\033[31mErro: Não foi possível encontrar o comando swag após instalação.\033[0m")
-				return
-			}
-		}
-	}
+	fmt.Printf("\033[33mUsando caminho relativo: %s\033[0m\n", mainPath)
 
-	// Criar diretório docs se não existir
-	if err := os.MkdirAll("docs", 0755); err != nil {
-		fmt.Printf("\033[31mErro ao criar diretório docs: %v\033[0m\n", err)
-		return
-	}
+	// 3. Executar o swag usando o caminho absoluto no argumento -g
+	// Importante: Tiramos o "cmd/" do argumento pois o mainPath já é o caminho completo
+	cmd := exec.Command("swag", "init", "-g", mainPath, "--parseDependency", "--parseInternal")
 
-	// Executar o comando swag com opções para forçar a regeneração
-	fmt.Println("\033[33mGerando nova documentação Swagger...\033[0m")
-	cmd := exec.Command(swagCmd, "init", "-g", "cmd/main.go", "--parseDependency", "--parseInternal", "--overridesFile", "")
+	// Garantimos que ele rode na raiz
+	cmd.Dir = basePath
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("\033[31mErro ao regenerar documentação Swagger: %v\033[0m\n", err)
+		fmt.Printf("\033[31mErro fatal: %v\033[0m\n", err)
 	} else {
-		// Adicionar timestamp nos arquivos gerados para forçar mudança de hash
-		adicionarTimestampNoJSON("docs/swagger.json")
-		fmt.Println("\033[32mDocumentação Swagger regenerada com sucesso!\033[0m")
+		fmt.Println("\033[32mSucesso! Documentação gerada.\033[0m")
 	}
 }
 

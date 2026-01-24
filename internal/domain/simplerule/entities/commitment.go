@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/rkaturabara/flickly/internal/domain/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/shopspring/decimal"
 )
 

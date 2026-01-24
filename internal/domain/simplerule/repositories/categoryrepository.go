@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"github.com/rkaturabara/flickly/internal/domain/core"
-	"github.com/rkaturabara/flickly/internal/domain/simplerule/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 )
 
 type ICategoryRepository interface {

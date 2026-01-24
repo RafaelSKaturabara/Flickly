@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/google/uuid"
-	"github.com/rkaturabara/flickly/internal/domain/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/shopspring/decimal"
 )
 

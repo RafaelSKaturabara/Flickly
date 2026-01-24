@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"github.com/rkaturabara/flickly/internal/domain/mockedapi/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/mockedapi/entities"
 	"github.com/google/uuid"
 )
 

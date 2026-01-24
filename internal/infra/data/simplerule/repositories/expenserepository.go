@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"github.com/rkaturabara/flickly/internal/domain/simplerule/entities"
-	"github.com/rkaturabara/flickly/internal/infra/data/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
 	"gorm.io/gorm"
 )
 
