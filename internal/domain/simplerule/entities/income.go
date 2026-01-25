@@ -8,10 +8,11 @@ import (
 
 type Income struct {
 	core.BaseEntity
-	UserID     uuid.UUID
 	Amount     decimal.Decimal
 	Source     string
 	IsAfterTax bool
+	UserID     uuid.UUID
+	User       SimpleRuleUser
 }
 
 func (u *Income) IsValid() bool {

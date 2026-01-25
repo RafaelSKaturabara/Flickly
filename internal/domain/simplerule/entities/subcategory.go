@@ -1,12 +1,16 @@
 package entities
 
-import "github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+import (
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/google/uuid"
+)
 
 type Subcategory struct {
 	core.BaseEntity
-	CategoryID  int64  `json:"category_id"`
-	Name        string `json:"name"`        // "Shelter", "Dining Out", etc.
-	Description string `json:"description"` // Texto explicativo das suas imagens
+	Name        string
+	Description string
+	CategoryID  uuid.UUID
+	Category    Category
 }
 
 func (u *Subcategory) IsValid() bool {

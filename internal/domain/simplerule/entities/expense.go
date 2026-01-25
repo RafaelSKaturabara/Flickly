@@ -3,14 +3,13 @@ package entities
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
 type Expense struct {
 	core.BaseEntity
-	UserID            uuid.UUID
 	CommitmentID      *uuid.UUID      // Refere-se ao Commitment
 	Date              time.Time       // Data do lançamento
 	SubcategoryID     uuid.UUID       // Ex: Shelter, Entertainment (o "SubType")
@@ -18,6 +17,8 @@ type Expense struct {
 	Description       string          // Descrição adicional
 	InstallmentNumber *int            // Controle de parcelas (ex: 6). O 6/12 está no commitment
 	IsReference       bool            // Campo "É apenas referência?". Utilizado para simular e contabilizar despesas futuras
+	UserID            uuid.UUID
+	User              SimpleRuleUser
 }
 
 // NewExpense é o construtor (Factory) para a entidade Expense

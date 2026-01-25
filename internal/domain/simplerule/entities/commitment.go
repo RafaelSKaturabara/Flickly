@@ -4,20 +4,21 @@ import (
 	"time"
 
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
 type Commitment struct {
 	core.BaseEntity
-	Description       string          `json:"description"`
-	TotalAmount       decimal.Decimal `json:"total_amount"`
-	TotalInstallments int             `json:"total_installments"`
-	StartDate         time.Time       `json:"start_date"`
-	IsActive          bool            `json:"is_active"`
+	Description       string          
+	TotalAmount       decimal.Decimal
+	TotalInstallments int             
+	StartDate         time.Time       
+	IsActive          bool            
+	UserID            uuid.UUID
+	User              SimpleRuleUser
 }
 
-// GetRemainingInstallments é um método auxiliar para calcular quantas parcelas faltam,
-// dado o número da parcela atual paga.
 func (c *Commitment) GetRemainingInstallments(currentInstallment int) int {
 	if currentInstallment >= c.TotalInstallments {
 		return 0

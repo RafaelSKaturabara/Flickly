@@ -4,16 +4,44 @@ import (
 	"log"
 	"time"
 
-	"gorm.io/driver/postgres" 
-	"github.com/glebarez/sqlite" 
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/gormmappings"
+	"github.com/glebarez/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
+func MigrateDatabase(db *gorm.DB) {
+	log.Println("[Database] Iniciando migrações...")
+
+	// 1. Rodar AutoMigrate
+	err := db.AutoMigrate(
+		&gormmappings.CategoryDB{},
+		&gormmappings.SubcategoryDB{},
+		&gormmappings.CommitmentDB{},
+		&gormmappings.ExpenseDB{},
+		&gormmappings.IncomeDB{},
+		&gormmappings.SimpleRuleUserDB{},
+	)
+	if err != nil {
+		log.Fatalf("[Database] Erro ao migrar: %v", err)
+	}
+
+	// 2. Rodar Seeds (Ordem importa por causa de FKs)
+	log.Println("[Database] Verificando sementes (seeds)...")
+	gormmappings.SeedCategories(db)
+	gormmappings.SeedSubcategories(db)
+	gormmappings.SeedCommitment(db)
+	gormmappings.SeedExpense(db)
+	gormmappings.SeedIncome(db)
+
+	log.Println("[Database] Infraestrutura de dados pronta.")
+}
+
 func GetPostgresDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
-	// Para SQLite, é apenas o nome do arquivo. 
-	dsn := "simplerule.db"
+	// Exemplo: "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=postgres password=postgres dbname=flickly port=5432 sslmode=disable"
 
 	// 2. Abrir a conexão
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
@@ -35,7 +63,7 @@ func GetPostgresDBConnection() *gorm.DB {
 
 func GetLocalDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
-	// Para SQLite, é apenas o nome do arquivo. 
+	// Para SQLite, é apenas o nome do arquivo.
 	dsn := "simplerule.db"
 
 	// 2. Abrir a conexão

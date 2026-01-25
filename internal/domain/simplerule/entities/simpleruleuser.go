@@ -2,11 +2,11 @@ package entities
 
 import "github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 
-type Category struct {
+type SimpleRuleUser struct {
 	core.BaseEntity
-	Name string
+	Nickname string 
 }
 
-func (u *Category) IsValid() bool {
+func (u *SimpleRuleUser) IsValid() bool {
 	return true
 }
