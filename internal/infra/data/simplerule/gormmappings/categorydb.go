@@ -30,9 +30,9 @@ func SeedCategories(db *gorm.DB) {
 	}
 
 	categories := []CategoryDB{
-		{Category: entities.Category{Name: "Needs"}},
-		{Category: entities.Category{Name: "Wants"}},
-		{Category: entities.Category{Name: "Savings"}},
+		{Category: entities.NewCategory("Needs")},
+		{Category: entities.NewCategory("Wants")},
+		{Category: entities.NewCategory("Savings")},
 	}
 
 	for _, cat := range categories {

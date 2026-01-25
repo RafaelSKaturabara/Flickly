@@ -9,8 +9,8 @@ import (
 type CommitmentDB struct {
 	entities.Commitment `gorm:"embedded"`
 	Description         string           `gorm:"type:varchar(255);not null"`
-	UserID              uuid.UUID        `gorm:"column:user_id;not null"`
-	User                SimpleRuleUserDB `gorm:"foreignKey:UserID;references:ID"`
+	UserSimpleRuleID              uuid.UUID        `gorm:"column:user_id;not null"`
+	User                UserSimpleRuleDB `gorm:"foreignKey:UserID;references:ID"`
 }
 
 func (CommitmentDB) TableName() string {

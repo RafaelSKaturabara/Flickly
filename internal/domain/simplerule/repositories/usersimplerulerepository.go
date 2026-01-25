@@ -5,6 +5,6 @@ import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 )
 
-type ISimpleRuleUserRepository interface {
-	core.Repository[entities.SimpleRuleUser]
+type IUserSimpleRuleRepository interface {
+	core.Repository[entities.UserSimpleRule]
 }

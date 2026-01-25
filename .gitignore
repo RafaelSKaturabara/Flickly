@@ -51,9 +51,7 @@ _cgo_export.*
 .env
 
 # Common IDE folders
-/.vscode/
 .idea
-.vscode
 
 main
 

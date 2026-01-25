@@ -22,7 +22,7 @@ func MigrateSimpleRuleDatabase(db *gorm.DB) {
 		&gormmappings.CommitmentDB{},
 		&gormmappings.ExpenseDB{},
 		&gormmappings.IncomeDB{},
-		&gormmappings.SimpleRuleUserDB{},
+		&gormmappings.UserSimpleRuleDB{},
 		&usergormmappings.UserDB{},
 	)
 	if err != nil {
@@ -36,7 +36,7 @@ func MigrateSimpleRuleDatabase(db *gorm.DB) {
 	gormmappings.SeedCommitment(db)
 	gormmappings.SeedExpense(db)
 	gormmappings.SeedIncome(db)
-	gormmappings.SeedSimpleRuleUsers(db)
+	gormmappings.SeedUserSimpleRule(db)
 
 	log.Println("[Database] Infraestrutura de dados pronta.")
 }

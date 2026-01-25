@@ -41,15 +41,15 @@ func SeedSubcategories(db *gorm.DB) {
 
 	subcats := []SubcategoryDB{
 		// Needs
-		{Subcategory: entities.Subcategory{Name: "Shelter", Description: "Rent, Mortgage, Property Taxes"}, Category: needs},
-		{Subcategory: entities.Subcategory{Name: "Food", Description: "Groceries"}, Category: needs},
-		{Subcategory: entities.Subcategory{Name: "Utilities", Description: "Water, Electricity, Internet"}, Category: needs},
+		{Subcategory: entities.NewSubcategory("Shelter", "Rent, Mortgage, Property Taxes", needs.ID)},
+		{Subcategory: entities.NewSubcategory("Food", "Groceries", needs.ID)},
+		{Subcategory: entities.NewSubcategory("Utilities", "Water, Electricity, Internet", needs.ID)},
 		// Wants
-		{Subcategory: entities.Subcategory{Name: "Dining Out", Description: "Restaurants, Coffee, Delivery"}, Category: wants},
-		{Subcategory: entities.Subcategory{Name: "Entertainment", Description: "Movies, Concerts, Games"}, Category: wants},
+		{Subcategory: entities.NewSubcategory("Dining Out", "Restaurants, Coffee, Delivery", wants.ID)},
+		{Subcategory: entities.NewSubcategory("Entertainment", "Movies, Concerts, Games", wants.ID)},
 		// Savings
-		{Subcategory: entities.Subcategory{Name: "Emergency Fund", Description: "Safety net for 6 months"}, Category: savings},
-		{Subcategory: entities.Subcategory{Name: "Investment", Description: "Stocks, Bonds, etc."}, Category: savings},
+		{Subcategory: entities.NewSubcategory("Emergency Fund", "Safety net for 6 months", savings.ID)},
+		{Subcategory: entities.NewSubcategory("Investment", "Stocks, Bonds, etc.", savings.ID)},
 	}
 
 	for _, sc := range subcats {

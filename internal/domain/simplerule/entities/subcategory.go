@@ -13,6 +13,15 @@ type Subcategory struct {
 	Category    Category
 }
 
+func NewSubcategory(name string, description string, categoryID uuid.UUID) Subcategory {
+	return Subcategory{
+		BaseEntity:  core.NewBaseEntity(),
+		Name:        name,
+		Description: description,
+		CategoryID:  categoryID,
+	}
+}
+
 func (u *Subcategory) IsValid() bool {
 	return true
 }

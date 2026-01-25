@@ -7,6 +7,13 @@ type Category struct {
 	Name string
 }
 
+func NewCategory(name string) Category {
+	return Category{
+		BaseEntity: core.NewBaseEntity(),
+		Name:       name,
+	}
+}
+
 func (u *Category) IsValid() bool {
 	return true
 }

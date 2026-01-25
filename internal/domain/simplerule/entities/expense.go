@@ -17,8 +17,8 @@ type Expense struct {
 	Description       string          // Descrição adicional
 	InstallmentNumber *int            // Controle de parcelas (ex: 6). O 6/12 está no commitment
 	IsReference       bool            // Campo "É apenas referência?". Utilizado para simular e contabilizar despesas futuras
-	UserID            uuid.UUID
-	User              SimpleRuleUser
+	UserSimpleRuleID  uuid.UUID
+	User              UserSimpleRule
 }
 
 // NewExpense é o construtor (Factory) para a entidade Expense
