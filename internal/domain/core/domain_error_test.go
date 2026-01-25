@@ -108,7 +108,7 @@ func TestErrUserAlreadyExist(t *testing.T) {
 
 	// Verificações
 	assert.NotNil(t, domainError, "ErrUserAlreadyExist deve retornar uma instância não nula")
-	assert.Equal(t, 1, domainError.Code, "O código de erro deve ser 1")
+	assert.Equal(t, 100, domainError.Code, "O código de erro deve ser 100")
 	assert.Equal(t, "Usuário já cadastrado", domainError.Message, "A mensagem deve ser 'Usuário já cadastrado'")
 	assert.Equal(t, originalError.Error(), domainError.Error(), "O erro original deve ser armazenado")
 }

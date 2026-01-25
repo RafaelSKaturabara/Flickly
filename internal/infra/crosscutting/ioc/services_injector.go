@@ -5,7 +5,7 @@ import (
 	simpleRuleIRepositories "github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
+	dbinit "github.com/RafaelSKaturabara/Flickly/internal/infra/data/init"
 	simpleRuleRepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/repositories"
 	infrarepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/repositories"
 )
@@ -14,16 +14,19 @@ func InjectServices(serviceCollection utilities.IServiceCollection) {
 	mediatR := mediator.NewMediatR()
 	// teste
 	utilities.AddService[mediator.Mediator](serviceCollection, mediatR)
-	utilities.AddService[repositories.IUserRepository](serviceCollection, infrarepositories.NewUserRepository())
+
+	// users
+	usersDb := dbinit.GetUsersLocalDBConnection()
+	dbinit.MigrateDatabase(usersDb)
+	utilities.AddService[repositories.IUserRepository](serviceCollection, infrarepositories.NewUserRepository(usersDb))
 
 	// simple rule
+	simpleRuleDb := dbinit.GetLocalSimpleRuleDBConnection()
+	dbinit.MigrateSimpleRuleDatabase(simpleRuleDb)
 
-	db := core.GetLocalDBConnection()
-	core.MigrateDatabase(db)
-
-	utilities.AddService[simpleRuleIRepositories.ICategoryRepository](serviceCollection, simpleRuleRepositories.NewCategoryRepository(db))
-	utilities.AddService[simpleRuleIRepositories.ICommitmentRepository](serviceCollection, simpleRuleRepositories.NewCommitmentRepository(db))
-	utilities.AddService[simpleRuleIRepositories.IExpenseRepository](serviceCollection, simpleRuleRepositories.NewExpenseRepository(db))
-	utilities.AddService[simpleRuleIRepositories.IIncomeRepository](serviceCollection, simpleRuleRepositories.NewIncomeRepository(db))
-	utilities.AddService[simpleRuleIRepositories.ISubcategoryRepository](serviceCollection, simpleRuleRepositories.NewSubcategoryRepository(db))
+	utilities.AddService[simpleRuleIRepositories.ICategoryRepository](serviceCollection, simpleRuleRepositories.NewCategoryRepository(simpleRuleDb))
+	utilities.AddService[simpleRuleIRepositories.ICommitmentRepository](serviceCollection, simpleRuleRepositories.NewCommitmentRepository(simpleRuleDb))
+	utilities.AddService[simpleRuleIRepositories.IExpenseRepository](serviceCollection, simpleRuleRepositories.NewExpenseRepository(simpleRuleDb))
+	utilities.AddService[simpleRuleIRepositories.IIncomeRepository](serviceCollection, simpleRuleRepositories.NewIncomeRepository(simpleRuleDb))
+	utilities.AddService[simpleRuleIRepositories.ISubcategoryRepository](serviceCollection, simpleRuleRepositories.NewSubcategoryRepository(simpleRuleDb))
 }

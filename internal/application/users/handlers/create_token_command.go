@@ -48,7 +48,7 @@ func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request medi
 		}
 	} else if command.GrantType == "refresh_token" {
 		userJwt, ok := c.Value(middleware.UserContextKey).(*entities.User)
-		user, err = h.userRepository.GetUserByID(c, userJwt.GetID())
+		user, err = h.userRepository.GetByID(userJwt.GetID())
 		if !ok || user == nil {
 			// corrigir erro na consulta
 			return nil, core.ErrInvalidCredentials(err)

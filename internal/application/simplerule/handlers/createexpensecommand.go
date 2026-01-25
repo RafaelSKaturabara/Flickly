@@ -34,7 +34,7 @@ func (h *CreateExpenseCommandHandler) Handle(c context.Context, request mediator
 		return nil, core.InvalidEntityError(expense.GetErrors())
 	}
 
-	err := h.expenseRepository.Create(*expense)
+	err := h.expenseRepository.Create(expense)
 	if err != nil {
 		return nil, core.DoNotUseThisGenericError(err)
 	}

@@ -36,7 +36,7 @@ func (h *CreateUserCommandHandler) Handle(c context.Context, request mediator.Re
 	}
 
 	user := entities.NewUser(command.Name, command.Email, "ClientID", "ClientSecret", password)
-	err = h.userRepository.CreateUser(c, user)
+	err = h.userRepository.Create(user)
 	if err != nil {
 		return nil, core.ErrUserAlreadyExist(err)
 	}

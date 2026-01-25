@@ -1,10 +1,10 @@
-package core
+package dbinit
 
 import (
 	"log"
 	"time"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/gormmappings"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,12 +16,7 @@ func MigrateDatabase(db *gorm.DB) {
 
 	// 1. Rodar AutoMigrate
 	err := db.AutoMigrate(
-		&gormmappings.CategoryDB{},
-		&gormmappings.SubcategoryDB{},
-		&gormmappings.CommitmentDB{},
-		&gormmappings.ExpenseDB{},
-		&gormmappings.IncomeDB{},
-		&gormmappings.SimpleRuleUserDB{},
+		&gormmappings.UserDB{},
 	)
 	if err != nil {
 		log.Fatalf("[Database] Erro ao migrar: %v", err)
@@ -29,11 +24,7 @@ func MigrateDatabase(db *gorm.DB) {
 
 	// 2. Rodar Seeds (Ordem importa por causa de FKs)
 	log.Println("[Database] Verificando sementes (seeds)...")
-	gormmappings.SeedCategories(db)
-	gormmappings.SeedSubcategories(db)
-	gormmappings.SeedCommitment(db)
-	gormmappings.SeedExpense(db)
-	gormmappings.SeedIncome(db)
+	gormmappings.SeedUsers(db)
 
 	log.Println("[Database] Infraestrutura de dados pronta.")
 }
@@ -61,10 +52,10 @@ func GetPostgresDBConnection() *gorm.DB {
 	return db
 }
 
-func GetLocalDBConnection() *gorm.DB {
+func GetUsersLocalDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
 	// Para SQLite, é apenas o nome do arquivo.
-	dsn := "simplerule.db"
+	dsn := "users.db"
 
 	// 2. Abrir a conexão
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{
