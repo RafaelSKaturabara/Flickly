@@ -63,3 +63,6 @@ code_quality_service
 /docs/swagger.json
 /docs/swagger.yaml
 /docs/types_hash.txt
+
+# SQLite
+*.db
