@@ -1,11 +1,17 @@
 {
-    "sqltools.useNodeRuntime": true,
     "sqltools.connections": [
         {
-            "previewLimit": 100,
+            "previewLimit": 50,
             "driver": "SQLite",
             "name": "SimpleRule",
             "database": "${workspaceFolder:Flickly}/simplerule.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "D:\\repos\\Go\\Flicklyusers.db",
+            "name": "Users"
         }
-    ]
+    ],
+    "sqltools.useNodeRuntime": true
 }

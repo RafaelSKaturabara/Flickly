@@ -15,10 +15,10 @@ type BaseEntityDB struct {
 	core.BaseEntity `gorm:"embedded"`
 }
 
-func (db *BaseEntityDB) FromBaseDomain(d core.BaseEntity) {
-	db.BaseEntity = d
+func (db *BaseEntityDB) ToDomain() core.BaseEntity {
+	return db.BaseEntity
 }
 
-func (db *BaseEntityDB) ToBaseDomain() core.BaseEntity {
-	return db.BaseEntity
+func (db *BaseEntityDB) FromDomain(d core.BaseEntity) {
+	db.BaseEntity = d
 }

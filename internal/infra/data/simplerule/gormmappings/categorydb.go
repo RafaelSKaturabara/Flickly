@@ -2,6 +2,7 @@ package gormmappings
 
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -15,11 +16,13 @@ func (CategoryDB) TableName() string {
 }
 
 func (db *CategoryDB) ToDomain() entities.Category {
-	return db.Category
+	var d entities.Category
+    copier.Copy(&d, db)
+    return d
 }
 
 func (db *CategoryDB) FromDomain(d entities.Category) {
-	db.Category = d
+	copier.Copy(db, &d)
 }
 
 func SeedCategories(db *gorm.DB) {
@@ -29,10 +32,21 @@ func SeedCategories(db *gorm.DB) {
 		return // Já tem dados
 	}
 
+	var needs, wants, savings entities.Category
+	var needsDB, wantsDB, savingsDB CategoryDB
+
+	needs = entities.NewCategory("Needs")
+	wants = entities.NewCategory("Wants")
+	savings = entities.NewCategory("Savings")
+
+	needsDB.FromDomain(needs)
+	wantsDB.FromDomain(wants)
+	savingsDB.FromDomain(savings)
+
 	categories := []CategoryDB{
-		{Category: entities.NewCategory("Needs")},
-		{Category: entities.NewCategory("Wants")},
-		{Category: entities.NewCategory("Savings")},
+		needsDB,
+		wantsDB,
+		savingsDB,
 	}
 
 	for _, cat := range categories {
