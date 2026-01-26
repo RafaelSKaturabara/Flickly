@@ -3,6 +3,7 @@ package gormmappings
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -17,11 +18,13 @@ func (UserSimpleRuleDB) TableName() string {
 }
 
 func (db *UserSimpleRuleDB) ToDomain() entities.UserSimpleRule {
-	return db.UserSimpleRule
+	var d entities.UserSimpleRule
+	copier.Copy(&d, db)
+	return d
 }
 
 func (db *UserSimpleRuleDB) FromDomain(d entities.UserSimpleRule) {
-	db.UserSimpleRule = d
+	copier.Copy(db, &d)
 }
 
 func SeedUserSimpleRule(db *gorm.DB) {}

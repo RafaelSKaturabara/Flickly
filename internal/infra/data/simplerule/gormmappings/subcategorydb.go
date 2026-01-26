@@ -3,6 +3,7 @@ package gormmappings
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -19,11 +20,13 @@ func (SubcategoryDB) TableName() string {
 }
 
 func (db *SubcategoryDB) ToDomain() entities.Subcategory {
-	return db.Subcategory
+	var d entities.Subcategory
+	copier.Copy(&d, db)
+	return d
 }
 
 func (db *SubcategoryDB) FromDomain(d entities.Subcategory) {
-	db.Subcategory = d
+	copier.Copy(db, &d)
 }
 
 func SeedSubcategories(db *gorm.DB) {
@@ -34,22 +37,42 @@ func SeedSubcategories(db *gorm.DB) {
 	}
 
 	// Precisamos buscar os IDs reais das categorias criadas no seed anterior
-	var needs, wants, savings CategoryDB
-	db.Where("name = ?", "Needs").First(&needs)
-	db.Where("name = ?", "Wants").First(&wants)
-	db.Where("name = ?", "Savings").First(&savings)
+	var needsDB, wantsDB, savingsDB CategoryDB
+	db.Where("name = ?", "Needs").First(&needsDB)
+	db.Where("name = ?", "Wants").First(&wantsDB)
+	db.Where("name = ?", "Savings").First(&savingsDB)
+
+	var shelter, food, utilities, diningOut, entertainment, emergencyFund, investment entities.Subcategory
+
+	var shelterDB, foodDB, utilitiesDB, diningOutDB, entertainmentDB, emergencyFundDB, investmentDB SubcategoryDB
+
+	shelter = entities.NewSubcategory("Shelter", "Rent, Mortgage, Property Taxes", needsDB.ID)
+	food = entities.NewSubcategory("Food", "Groceries", needsDB.ID)
+	utilities = entities.NewSubcategory("Utilities", "Water, Electricity, Internet", needsDB.ID)
+	diningOut = entities.NewSubcategory("Dining Out", "Restaurants, Coffee, Delivery", wantsDB.ID)
+	entertainment = entities.NewSubcategory("Entertainment", "Movies, Concerts, Games", wantsDB.ID)
+	emergencyFund = entities.NewSubcategory("Emergency Fund", "Safety net for 6 months", savingsDB.ID)
+	investment = entities.NewSubcategory("Investment", "Stocks, Bonds, etc.", savingsDB.ID)
+
+	shelterDB.FromDomain(shelter)
+	foodDB.FromDomain(food)
+	utilitiesDB.FromDomain(utilities)
+	diningOutDB.FromDomain(diningOut)
+	entertainmentDB.FromDomain(entertainment)
+	emergencyFundDB.FromDomain(emergencyFund)
+	investmentDB.FromDomain(investment)
 
 	subcats := []SubcategoryDB{
 		// Needs
-		{Subcategory: entities.NewSubcategory("Shelter", "Rent, Mortgage, Property Taxes", needs.ID)},
-		{Subcategory: entities.NewSubcategory("Food", "Groceries", needs.ID)},
-		{Subcategory: entities.NewSubcategory("Utilities", "Water, Electricity, Internet", needs.ID)},
+		shelterDB,
+		foodDB,
+		utilitiesDB,
 		// Wants
-		{Subcategory: entities.NewSubcategory("Dining Out", "Restaurants, Coffee, Delivery", wants.ID)},
-		{Subcategory: entities.NewSubcategory("Entertainment", "Movies, Concerts, Games", wants.ID)},
+		diningOutDB,
+		entertainmentDB,
 		// Savings
-		{Subcategory: entities.NewSubcategory("Emergency Fund", "Safety net for 6 months", savings.ID)},
-		{Subcategory: entities.NewSubcategory("Investment", "Stocks, Bonds, etc.", savings.ID)},
+		emergencyFundDB,
+		investmentDB,
 	}
 
 	for _, sc := range subcats {

@@ -3,6 +3,7 @@ package gormmappings
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -17,11 +18,13 @@ func (IncomeDB) TableName() string {
 }
 
 func (db *IncomeDB) ToDomain() entities.Income {
-	return db.Income
+	var d entities.Income
+	copier.Copy(&d, db)
+	return d
 }
 
 func (db *IncomeDB) FromDomain(d entities.Income) {
-	db.Income = d
+	copier.Copy(db, &d)
 }
 
 func SeedIncome(db *gorm.DB) {}

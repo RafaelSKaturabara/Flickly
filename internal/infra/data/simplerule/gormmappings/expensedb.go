@@ -4,6 +4,7 @@ import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -19,11 +20,13 @@ func (ExpenseDB) TableName() string {
 }
 
 func (db *ExpenseDB) ToDomain() entities.Expense {
-	return db.Expense
+	var d entities.Expense
+	copier.Copy(&d, db)
+	return d
 }
 
 func (db *ExpenseDB) FromDomain(d entities.Expense) {
-	db.Expense = d
+	copier.Copy(db, &d)
 }
 
 func SeedExpense(db *gorm.DB) {}
