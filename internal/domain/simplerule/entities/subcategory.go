@@ -7,10 +7,11 @@ import (
 
 type Subcategory struct {
 	core.BaseEntity
-	Name        string
-	Description string
-	CategoryID  uuid.UUID
-	Category    Category
+	Name             string
+	Description      string
+	CategoryID       uuid.UUID
+	Category         Category
+	UserSimpleRuleID *uuid.UUID
 }
 
 func NewSubcategory(name string, description string, categoryID uuid.UUID) Subcategory {

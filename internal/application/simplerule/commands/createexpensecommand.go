@@ -1,4 +1,4 @@
-package handlers
+package commands
 
 import (
 	"context"
@@ -13,6 +13,17 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type CreateExpenseCommand struct {
+	UserID            uuid.UUID
+	CommitmentID      *uuid.UUID
+	Date              time.Time
+	SubcategoryID     uuid.UUID
+	Amount            decimal.Decimal
+	Description       string
+	InstallmentNumber *int
+	IsReference       bool
+}
+
 type CreateExpenseCommandHandler struct {
 	mediator          mediator.Mediator
 	expenseRepository repositories.IExpenseRepository
@@ -26,7 +37,7 @@ func NewCreateExpenseCommandHandler(serviceCollection utilities.IServiceCollecti
 }
 
 func (h *CreateExpenseCommandHandler) Handle(c context.Context, request mediator.Request) (mediator.Response, error) {
-	command := request.(CreateRouteCommand)
+	command := request.(CreateExpenseCommand)
 
 	expense := entities.NewExpense(command.UserID, command.CommitmentID, command.Date, command.SubcategoryID, command.Amount, command.Description, command.InstallmentNumber, command.IsReference)
 
@@ -40,15 +51,4 @@ func (h *CreateExpenseCommandHandler) Handle(c context.Context, request mediator
 	}
 
 	return expense, nil
-}
-
-type CreateRouteCommand struct {
-	UserID            uuid.UUID
-	CommitmentID      *uuid.UUID
-	Date              time.Time
-	SubcategoryID     uuid.UUID
-	Amount            decimal.Decimal
-	Description       string
-	InstallmentNumber *int
-	IsReference       bool
 }

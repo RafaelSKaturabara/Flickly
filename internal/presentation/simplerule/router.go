@@ -20,6 +20,7 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 	{
 		// Rotas públicas
 		authGroup.POST("/expense", jwtMiddleware.Auth(), simpleRuleHandler.PostExpense)
+		authGroup.GET("/subcategories", jwtMiddleware.Auth(), simpleRuleHandler.ListAllSubcategories)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {

@@ -7,7 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type PostExpenseViewModel struct {
+type PostExpenseRequest struct {
 	CommitmentID      *uuid.UUID      `json:"commitmentId"`      // Refere-se ao Commitment
 	Date              time.Time       `json:"date"`              // Data do lançamento
 	SubcategoryID     uuid.UUID       `json:"subcategoryId"`     // Ex: Shelter, Entertainment (o "SubType")
@@ -18,6 +18,6 @@ type PostExpenseViewModel struct {
 }
 
 
-type PostExpenseViewModelResponse struct {
+type PostExpenseResponse struct {
 	ID	uuid.UUID
 }
