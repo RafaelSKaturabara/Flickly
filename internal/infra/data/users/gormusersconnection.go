@@ -1,29 +1,22 @@
-package dbinit
+package users
 
 import (
 	"log"
 	"time"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/gormmappings"
-	usergormmappings "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-func MigrateSimpleRuleDatabase(db *gorm.DB) {
+func MigrateDatabase(db *gorm.DB) {
 	log.Println("[Database] Iniciando migrações...")
 
 	// 1. Rodar AutoMigrate
 	err := db.AutoMigrate(
-		&gormmappings.CategoryDB{},
-		&gormmappings.SubcategoryDB{},
-		&gormmappings.CommitmentDB{},
-		&gormmappings.ExpenseDB{},
-		&gormmappings.IncomeDB{},
-		&gormmappings.UserSimpleRuleDB{},
-		&usergormmappings.UserDB{},
+		&gormmappings.UserDB{},
 	)
 	if err != nil {
 		log.Fatalf("[Database] Erro ao migrar: %v", err)
@@ -31,17 +24,12 @@ func MigrateSimpleRuleDatabase(db *gorm.DB) {
 
 	// 2. Rodar Seeds (Ordem importa por causa de FKs)
 	log.Println("[Database] Verificando sementes (seeds)...")
-	gormmappings.SeedCategories(db)
-	gormmappings.SeedSubcategories(db)
-	gormmappings.SeedCommitment(db)
-	gormmappings.SeedExpense(db)
-	gormmappings.SeedIncome(db)
-	gormmappings.SeedUserSimpleRule(db)
+	gormmappings.SeedUsers(db)
 
 	log.Println("[Database] Infraestrutura de dados pronta.")
 }
 
-func GetPostgresSimpleRuleDBConnection() *gorm.DB {
+func GetPostgresDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
 	// Exemplo: "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
 	dsn := "host=localhost user=postgres password=postgres dbname=flickly port=5432 sslmode=disable"
@@ -64,10 +52,10 @@ func GetPostgresSimpleRuleDBConnection() *gorm.DB {
 	return db
 }
 
-func GetLocalSimpleRuleDBConnection() *gorm.DB {
+func GetUsersLocalDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
 	// Para SQLite, é apenas o nome do arquivo.
-	dsn := "simplerule.db"
+	dsn := "users.db"
 
 	// 2. Abrir a conexão
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{
