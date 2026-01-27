@@ -4,8 +4,6 @@
 name: Go CI/CD
 
 on:
-  push:
-    branches: [ "main", "feature/*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -19,14 +17,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.6'
+          go-version: '1.24'
           cache: true
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          # 'latest' ou 'v1.64' garantem suporte ao Go 1.25+
-          version: latest
+          version: v1.64
           args: --timeout=5m ./...
 
   unit-tests:
@@ -38,11 +35,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.6'
+          go-version: '1.24' 
           cache: true
 
       - name: Run unit tests
-        # Adicionado -coverprofile para gerar o arquivo que o upload-artifact espera
         run: go test -v -short -coverprofile=coverage.out ./...
 
       - name: Upload test coverage
@@ -62,7 +58,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.6'
+          go-version: '1.24' 
           cache: true
 
       - name: Set up Docker Buildx
@@ -70,7 +66,6 @@ jobs:
 
       - name: Run integration tests
         run: |
-          # O GitHub Actions já vem com o Docker Compose V2 (comando: docker compose)
           docker compose -f docker-compose.test.yml up --build --exit-code-from app || \
           go test -v ./internal/integration_tests
         env:
@@ -86,7 +81,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.6'
+          go-version: '1.24' # Alterado
           cache: true
 
       - name: Build
