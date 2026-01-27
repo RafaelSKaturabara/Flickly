@@ -42,6 +42,7 @@ func main() {
 	swaggerConfig.SetupSwagger(router)
 
 	// Inicia o servidor na porta 8090
+
 	err := router.Run(":8090")
 	if err != nil {
 		return
