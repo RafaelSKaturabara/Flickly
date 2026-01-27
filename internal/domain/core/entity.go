@@ -16,11 +16,11 @@ type Entity interface {
 }
 
 type BaseEntity struct {
-	ID        uuid.UUID  `json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdateAt  *time.Time `json:"updateAt,omitempty"`
-	DeletedAt *time.Time `json:"deletedAt,omitempty"`
-	Errors    *map[string]string `json:"-"`
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdateAt  *time.Time
+	DeletedAt *time.Time
+	Errors    *map[string]string `gorm:"-"`
 }
 
 func (e *BaseEntity) GetID() uuid.UUID {

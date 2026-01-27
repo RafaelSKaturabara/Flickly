@@ -54,6 +54,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/mock": {
+            "put": {
+                "description": "Cria um novo mock com os dados fornecidos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mockedapi"
+                ],
+                "summary": "Criar mock",
+                "parameters": [
+                    {
+                        "description": "Dados do mock",
+                        "name": "mock",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.RouteViewModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.RouteViewModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/oauth/register": {
             "post": {
                 "description": "Cria uma nova conta de usuário no sistema",
@@ -74,7 +114,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest"
+                            "$ref": "#/definitions/viewmodel.RegisterRequest"
                         }
                     }
                 ],
@@ -82,7 +122,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Usuário registrado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse"
+                            "$ref": "#/definitions/viewmodel.RegisterResponse"
                         }
                     },
                     "400": {
@@ -179,7 +219,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Token gerado com sucesso",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse"
+                            "$ref": "#/definitions/viewmodel.TokenResponse"
                         }
                     },
                     "400": {
@@ -212,6 +252,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/simplerule/expense": {
+            "post": {
+                "description": "Cria um novo expense com os dados fornecidos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "simplerule"
+                ],
+                "summary": "Criar expense",
+                "parameters": [
+                    {
+                        "description": "Dados do expense",
+                        "name": "expense",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.PostExpenseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.PostExpenseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/simplerule/subcategories": {
+            "get": {
+                "description": "Lista todas as subcategorias",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "simplerule"
+                ],
+                "summary": "Listar subcategorias",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.ListAllSubcategoriesViewModelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
                 "description": "Cria um novo usuário com os dados fornecidos",
@@ -232,7 +341,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest"
+                            "$ref": "#/definitions/viewmodel.CreateUserRequest"
                         }
                     }
                 ],
@@ -240,7 +349,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse"
+                            "$ref": "#/definitions/viewmodel.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -254,83 +363,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.CreateUserResponse": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "user": {
-                    "$ref": "#/definitions/github_com_rkaturabara_flickly_internal_domain_users_entities.User"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_application_users_viewmodel.TokenResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expires_in": {
-                    "type": "integer"
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "token_type": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_rkaturabara_flickly_internal_domain_users_entities.User": {
+        "entities.User": {
             "type": "object",
             "properties": {
                 "client_id": {
@@ -347,6 +380,12 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -373,6 +412,342 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "viewmodel.ActionViewModel": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "$ref": "#/definitions/viewmodel.ConditionViewModel"
+                },
+                "cookieName": {
+                    "type": "string"
+                },
+                "cookieValue": {
+                    "type": "string"
+                },
+                "fieldToSet": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "removeCookie": {
+                    "type": "boolean"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.BodyViewModel": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.ConditionViewModel": {
+            "type": "object",
+            "properties": {
+                "fieldToCompare": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "valueToCompare": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.CookieViewModel": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "expires": {
+                    "type": "integer"
+                },
+                "httpOnly": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "secure": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.HeaderViewModel": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.HttpResponseViewModel": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/viewmodel.BodyViewModel"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.CookieViewModel"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.HeaderViewModel"
+                    }
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "viewmodel.ListAllSubcategoriesViewModelResponse": {
+            "type": "object",
+            "properties": {
+                "subcategories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.SubcategoryResponse"
+                    }
+                }
+            }
+        },
+        "viewmodel.MockViewModel": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.ConditionViewModel"
+                    }
+                },
+                "hasCondition": {
+                    "type": "boolean"
+                },
+                "response": {
+                    "$ref": "#/definitions/viewmodel.HttpResponseViewModel"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.RuleViewModel"
+                    }
+                }
+            }
+        },
+        "viewmodel.PostExpenseRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Valor em centavos para evitar erros de float",
+                    "type": "number"
+                },
+                "commitmentId": {
+                    "description": "Refere-se ao Commitment",
+                    "type": "string"
+                },
+                "date": {
+                    "description": "Data do lançamento",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Descrição adicional",
+                    "type": "string"
+                },
+                "installmentNumber": {
+                    "description": "Controle de parcelas (ex: 6). O 6/12 está no commitment",
+                    "type": "integer"
+                },
+                "isReference": {
+                    "description": "Campo \"É apenas referência?\". Utilizado para simular e contabilizar despesas futuras",
+                    "type": "boolean"
+                },
+                "subcategoryId": {
+                    "description": "Ex: Shelter, Entertainment (o \"SubType\")",
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.PostExpenseResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "viewmodel.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "$ref": "#/definitions/entities.User"
+                }
+            }
+        },
+        "viewmodel.RouteViewModel": {
+            "type": "object",
+            "properties": {
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mocks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.MockViewModel"
+                    }
+                },
+                "paths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "viewmodel.RuleViewModel": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/viewmodel.ActionViewModel"
+                    }
+                },
+                "priority": {
+                    "type": "integer"
+                }
+            }
+        },
+        "viewmodel.SubcategoryResponse": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "$ref": "#/definitions/viewmodel.CategoryResponse"
+                },
+                "categoryId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "token_type": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`
@@ -380,7 +755,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:8090",
 	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
 	Title:            "Flickly API",

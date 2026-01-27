@@ -1,0 +1,496 @@
+basePath: /
+definitions:
+  entities.User:
+    properties:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      email:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+      token_type:
+        type: string
+      updateAt:
+        type: string
+      verified_email:
+        type: boolean
+    type: object
+  viewmodel.ActionViewModel:
+    properties:
+      condition:
+        $ref: '#/definitions/viewmodel.ConditionViewModel'
+      cookieName:
+        type: string
+      cookieValue:
+        type: string
+      fieldToSet:
+        type: string
+      priority:
+        type: integer
+      removeCookie:
+        type: boolean
+      result:
+        type: string
+      type:
+        type: string
+    type: object
+  viewmodel.BodyViewModel:
+    properties:
+      content:
+        type: string
+      contentType:
+        type: string
+    type: object
+  viewmodel.CategoryResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  viewmodel.ConditionViewModel:
+    properties:
+      fieldToCompare:
+        type: string
+      operator:
+        type: string
+      priority:
+        type: integer
+      valueToCompare:
+        type: string
+    type: object
+  viewmodel.CookieViewModel:
+    properties:
+      domain:
+        type: string
+      expires:
+        type: integer
+      httpOnly:
+        type: boolean
+      name:
+        type: string
+      path:
+        type: string
+      secure:
+        type: boolean
+      value:
+        type: string
+    type: object
+  viewmodel.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  viewmodel.CreateUserResponse:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  viewmodel.HeaderViewModel:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  viewmodel.HttpResponseViewModel:
+    properties:
+      body:
+        $ref: '#/definitions/viewmodel.BodyViewModel'
+      cookies:
+        items:
+          $ref: '#/definitions/viewmodel.CookieViewModel'
+        type: array
+      headers:
+        items:
+          $ref: '#/definitions/viewmodel.HeaderViewModel'
+        type: array
+      statusCode:
+        type: integer
+    type: object
+  viewmodel.ListAllSubcategoriesViewModelResponse:
+    properties:
+      subcategories:
+        items:
+          $ref: '#/definitions/viewmodel.SubcategoryResponse'
+        type: array
+    type: object
+  viewmodel.MockViewModel:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/viewmodel.ConditionViewModel'
+        type: array
+      hasCondition:
+        type: boolean
+      response:
+        $ref: '#/definitions/viewmodel.HttpResponseViewModel'
+      rules:
+        items:
+          $ref: '#/definitions/viewmodel.RuleViewModel'
+        type: array
+    type: object
+  viewmodel.PostExpenseRequest:
+    properties:
+      amount:
+        description: Valor em centavos para evitar erros de float
+        type: number
+      commitmentId:
+        description: Refere-se ao Commitment
+        type: string
+      date:
+        description: Data do lançamento
+        type: string
+      description:
+        description: Descrição adicional
+        type: string
+      installmentNumber:
+        description: 'Controle de parcelas (ex: 6). O 6/12 está no commitment'
+        type: integer
+      isReference:
+        description: Campo "É apenas referência?". Utilizado para simular e contabilizar
+          despesas futuras
+        type: boolean
+      subcategoryId:
+        description: 'Ex: Shelter, Entertainment (o "SubType")'
+        type: string
+    type: object
+  viewmodel.PostExpenseResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  viewmodel.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  viewmodel.RegisterResponse:
+    properties:
+      user:
+        $ref: '#/definitions/entities.User'
+    type: object
+  viewmodel.RouteViewModel:
+    properties:
+      methods:
+        items:
+          type: string
+        type: array
+      mocks:
+        items:
+          $ref: '#/definitions/viewmodel.MockViewModel'
+        type: array
+      paths:
+        items:
+          type: string
+        type: array
+    type: object
+  viewmodel.RuleViewModel:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/viewmodel.ActionViewModel'
+        type: array
+      priority:
+        type: integer
+    type: object
+  viewmodel.SubcategoryResponse:
+    properties:
+      category:
+        $ref: '#/definitions/viewmodel.CategoryResponse'
+      categoryId:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  viewmodel.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      scope:
+        type: string
+      token_type:
+        type: string
+    type: object
+host: localhost:8090
+info:
+  contact: {}
+  description: API do projeto Flickly
+  license:
+    name: MIT
+  title: Flickly API
+  version: "1.0"
+paths:
+  /api/flickly/version:
+    get:
+      description: Retorna informações sobre a versão da API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+      summary: Verificar versão da API
+      tags:
+      - system
+  /health:
+    get:
+      description: Retorna o status de saúde do servidor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+      summary: Verificar saúde do servidor
+      tags:
+      - system
+  /mock:
+    put:
+      consumes:
+      - application/json
+      description: Cria um novo mock com os dados fornecidos
+      parameters:
+      - description: Dados do mock
+        in: body
+        name: mock
+        required: true
+        schema:
+          $ref: '#/definitions/viewmodel.RouteViewModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.RouteViewModel'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Criar mock
+      tags:
+      - mockedapi
+  /oauth/register:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova conta de usuário no sistema
+      parameters:
+      - description: Dados do usuário para registro
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/viewmodel.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuário registrado com sucesso
+          schema:
+            $ref: '#/definitions/viewmodel.RegisterResponse'
+        "400":
+          description: Dados inválidos
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Usuário já existe
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registra um novo usuário
+      tags:
+      - oauth
+  /oauth/token:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Gera um token de acesso usando OAuth2
+      parameters:
+      - description: Tipo de concessão (password ou refresh_token)
+        in: formData
+        name: grant_type
+        required: true
+        type: string
+      - description: ID do cliente
+        in: formData
+        name: client_id
+        required: true
+        type: string
+      - description: Segredo do cliente
+        in: formData
+        name: client_secret
+        required: true
+        type: string
+      - description: Nome de usuário (email) - obrigatório para grant_type=password
+        in: formData
+        name: username
+        type: string
+      - description: Senha do usuário - obrigatório para grant_type=password
+        in: formData
+        name: password
+        type: string
+      - description: Refresh token - obrigatório para grant_type=refresh_token
+        in: formData
+        name: refresh_token
+        type: string
+      - description: Escopo do token
+        in: formData
+        name: scope
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token gerado com sucesso
+          schema:
+            $ref: '#/definitions/viewmodel.TokenResponse'
+        "400":
+          description: Dados inválidos
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Credenciais inválidas
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Autentica um usuário
+      tags:
+      - oauth
+  /simplerule/expense:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo expense com os dados fornecidos
+      parameters:
+      - description: Dados do expense
+        in: body
+        name: expense
+        required: true
+        schema:
+          $ref: '#/definitions/viewmodel.PostExpenseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.PostExpenseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Criar expense
+      tags:
+      - simplerule
+  /simplerule/subcategories:
+    get:
+      consumes:
+      - application/json
+      description: Lista todas as subcategorias
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.ListAllSubcategoriesViewModelResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Listar subcategorias
+      tags:
+      - simplerule
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo usuário com os dados fornecidos
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/viewmodel.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Criar usuário
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"

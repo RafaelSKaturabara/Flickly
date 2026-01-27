@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/rkaturabara/flickly/internal/infra/crosscutting/utilities"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 )
 
 // Request interface para requisições

@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RafaelSKaturabara/Flickly/docs"
 	"github.com/gin-gonic/gin"
-	"github.com/rkaturabara/flickly/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -50,7 +50,7 @@ func SetupSwagger(router *gin.Engine) {
 	docs.SwaggerInfo.Title = "Flickly API"
 	docs.SwaggerInfo.Description = "API do projeto Flickly (Atualizado em: " + time.Now().Format(time.RFC3339) + ")"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = "localhost:8090"
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
@@ -79,66 +79,30 @@ func SetupSwagger(router *gin.Engine) {
 	// Abrir o Swagger no navegador após 2 segundos
 	go abrirSwaggerNoBrowser(timestamp)
 }
-
-// regenerarSwagger executa o comando para regenerar a documentação do Swagger
 func regenerarSwagger() {
-	// Detectar o comando do swag
-	swagCmd := ""
-	if commandExists("swag") {
-		swagCmd = "swag"
-	} else if envGoPath := os.Getenv("GOPATH"); envGoPath != "" {
-		possiblePath := fmt.Sprintf("%s/bin/swag", envGoPath)
-		if fileExists(possiblePath) {
-			swagCmd = possiblePath
-		}
-	} else if goPath, err := exec.Command("go", "env", "GOPATH").Output(); err == nil {
-		possiblePath := fmt.Sprintf("%s/bin/swag", strings.TrimSpace(string(goPath)))
-		if fileExists(possiblePath) {
-			swagCmd = possiblePath
-		}
-	}
+	basePath, _ := os.Getwd()
+	mainPath := filepath.Join("cmd", "main.go")
 
-	if swagCmd == "" {
-		fmt.Println("\033[31mErro: Não foi possível encontrar o comando swag. Instalando...\033[0m")
-		cmd := exec.Command("go", "install", "github.com/swaggo/swag/cmd/swag@latest")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			fmt.Printf("\033[31mErro ao instalar swag: %v\033[0m\n", err)
-			return
-		}
+	fmt.Println("\033[33m[Swagger] Atualizando documentação automaticamente...\033[0m")
 
-		// Verificar novamente após instalação
-		if commandExists("swag") {
-			swagCmd = "swag"
-		} else if goPath, err := exec.Command("go", "env", "GOPATH").Output(); err == nil {
-			possiblePath := fmt.Sprintf("%s/bin/swag", strings.TrimSpace(string(goPath)))
-			if fileExists(possiblePath) {
-				swagCmd = possiblePath
-			} else {
-				fmt.Println("\033[31mErro: Não foi possível encontrar o comando swag após instalação.\033[0m")
-				return
-			}
-		}
-	}
+	// Usamos 'go run' com a URL do repositório para ser 100% portátil (Style .NET)
+	// O parâmetro '-d ./' diz ao gerador para procurar rotas em todo o projeto.
+	cmd := exec.Command("go", "run", "github.com/swaggo/swag/cmd/swag@latest", "init",
+		"-g", mainPath,
+		"-d", "./",
+		"--parseDependency",
+		"--parseInternal",
+		"--parseDepth", "3",
+		"--propertyStrategy", "camelcase")
 
-	// Criar diretório docs se não existir
-	if err := os.MkdirAll("docs", 0755); err != nil {
-		fmt.Printf("\033[31mErro ao criar diretório docs: %v\033[0m\n", err)
-		return
-	}
-
-	// Executar o comando swag com opções para forçar a regeneração
-	fmt.Println("\033[33mGerando nova documentação Swagger...\033[0m")
-	cmd := exec.Command(swagCmd, "init", "-g", "cmd/main.go", "--parseDependency", "--parseInternal", "--overridesFile", "")
+	cmd.Dir = basePath
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("\033[31mErro ao regenerar documentação Swagger: %v\033[0m\n", err)
+		fmt.Printf("\033[31m[Swagger] Erro na geração automática: %v\033[0m\n", err)
 	} else {
-		// Adicionar timestamp nos arquivos gerados para forçar mudança de hash
-		adicionarTimestampNoJSON("docs/swagger.json")
-		fmt.Println("\033[32mDocumentação Swagger regenerada com sucesso!\033[0m")
+		fmt.Println("\033[32m[Swagger] OK! Documentação atualizada com sucesso.\033[0m")
 	}
 }
 
@@ -277,7 +241,7 @@ func verificarSwaggerExistente() {
 // abrirSwaggerNoBrowser abre o Swagger UI no navegador padrão
 func abrirSwaggerNoBrowser(timestamp string) {
 	time.Sleep(2 * time.Second)
-	swaggerURL := fmt.Sprintf("http://localhost:8080/swagger/index.html?v=%s", timestamp)
+	swaggerURL := fmt.Sprintf("http://localhost:8090/swagger/index.html?v=%s", timestamp)
 	fmt.Printf("Abrindo Swagger UI em: %s\n", swaggerURL)
 	err := abrirNavegador(swaggerURL)
 	if err != nil {

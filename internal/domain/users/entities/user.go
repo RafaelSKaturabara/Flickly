@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"github.com/rkaturabara/flickly/internal/domain/core"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 )
 
 // User representa um usuário no sistema com suporte a OAuth2
