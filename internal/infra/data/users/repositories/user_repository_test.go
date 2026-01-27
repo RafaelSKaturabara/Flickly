@@ -14,7 +14,7 @@ import (
 
 func setupTestDB() *gorm.DB {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&gormmappings.UserDB{})
+	_ = db.AutoMigrate(&gormmappings.UserDB{})
 	return db
 }
 
@@ -60,11 +60,12 @@ func TestUpdateUser(t *testing.T) {
 	db := setupTestDB()
 	repository := NewUserRepository(db)
 	user := entities.NewUser("Test User", "test@example.com", "google", "123456789", "password123")
-	repository.Create(user)
+	err := repository.Create(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução
 	user.Name = "Updated Name"
-	err := repository.Update(user)
+	err = repository.Update(user)
 
 	// Verificações
 	assert.NoError(t, err)
@@ -107,7 +108,8 @@ func TestGetUserByEmailAndPasswordAndClientAndSecret(t *testing.T) {
 
 	user := entities.NewUser("Test User", "test@example.com", "client1", "secret1", hashedPassword)
 	ctx := context.Background()
-	repository.Create(user)
+	err := repository.Create(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução - Sucesso
 	retrieved, err := repository.GetUserByEmailAndPasswordAndClientAndSecret(ctx, "test@example.com", password, "client1", "secret1")
@@ -131,10 +133,11 @@ func TestUpdateUserOAuthInfo(t *testing.T) {
 	repository := NewUserRepository(db)
 	user := entities.NewUser("Test User", "test@example.com", "c", "s", "p")
 	ctx := context.Background()
-	repository.Create(user)
+	err := repository.Create(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução
-	err := repository.UpdateUserOAuthInfo(ctx, user.ID, "new-token", "refresh", 3600, []string{"scope1"})
+	err = repository.UpdateUserOAuthInfo(ctx, user.ID, "new-token", "refresh", 3600, []string{"scope1"})
 
 	// Verificações
 	assert.NoError(t, err)
@@ -151,10 +154,11 @@ func TestUpdateUserRoles(t *testing.T) {
 	repository := NewUserRepository(db)
 	user := entities.NewUser("Test User", "test@example.com", "c", "s", "p")
 	ctx := context.Background()
-	repository.Create(user)
+	err := repository.Create(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução
-	err := repository.UpdateUserRoles(ctx, user.ID, []string{"admin", "editor"})
+	err = repository.UpdateUserRoles(ctx, user.ID, []string{"admin", "editor"})
 
 	// Verificações
 	assert.NoError(t, err)
@@ -169,10 +173,11 @@ func TestDeleteUser(t *testing.T) {
 	db := setupTestDB()
 	repository := NewUserRepository(db)
 	user := entities.NewUser("Test User", "test@example.com", "c", "s", "p")
-	repository.Create(user)
+	err := repository.Create(user)
+	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução
-	err := repository.Delete(user.ID)
+	err = repository.Delete(user.ID)
 
 	// Verificações
 	assert.NoError(t, err)

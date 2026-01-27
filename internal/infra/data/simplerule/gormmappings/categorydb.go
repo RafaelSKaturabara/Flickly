@@ -17,12 +17,12 @@ func (CategoryDB) TableName() string {
 
 func (db *CategoryDB) ToDomain() entities.Category {
 	var d entities.Category
-    copier.Copy(&d, db)
+    _ = copier.Copy(&d, db)
     return d
 }
 
 func (db *CategoryDB) FromDomain(d entities.Category) {
-	copier.Copy(db, &d)
+	_ = copier.Copy(db, &d)
 }
 
 func SeedCategories(db *gorm.DB) {

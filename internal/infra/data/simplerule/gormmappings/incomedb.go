@@ -19,12 +19,12 @@ func (IncomeDB) TableName() string {
 
 func (db *IncomeDB) ToDomain() entities.Income {
 	var d entities.Income
-	copier.Copy(&d, db)
+	_ = copier.Copy(&d, db)
 	return d
 }
 
 func (db *IncomeDB) FromDomain(d entities.Income) {
-	copier.Copy(db, &d)
+	_ = copier.Copy(db, &d)
 }
 
 func SeedIncome(db *gorm.DB) {}

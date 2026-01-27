@@ -20,12 +20,12 @@ func (CommitmentDB) TableName() string {
 
 func (db *CommitmentDB) ToDomain() entities.Commitment {
 	var d entities.Commitment
-	copier.Copy(&d, db)
+	_ = copier.Copy(&d, db)
 	return d
 }
 
 func (db *CommitmentDB) FromDomain(d entities.Commitment) {
-	copier.Copy(db, &d)	
+	_ = copier.Copy(db, &d)	
 }
 
 func SeedCommitment(db *gorm.DB) {}

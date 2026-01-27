@@ -21,12 +21,12 @@ func (SubcategoryDB) TableName() string {
 
 func (db *SubcategoryDB) ToDomain() entities.Subcategory {
 	var d entities.Subcategory
-	copier.Copy(&d, db)
+	_ = copier.Copy(&d, db)
 	return d
 }
 
 func (db *SubcategoryDB) FromDomain(d entities.Subcategory) {
-	copier.Copy(db, &d)
+	_ = copier.Copy(db, &d)
 }
 
 func SeedSubcategories(db *gorm.DB) {

@@ -19,12 +19,12 @@ func (UserSimpleRuleDB) TableName() string {
 
 func (db *UserSimpleRuleDB) ToDomain() entities.UserSimpleRule {
 	var d entities.UserSimpleRule
-	copier.Copy(&d, db)
+	_ = copier.Copy(&d, db)
 	return d
 }
 
 func (db *UserSimpleRuleDB) FromDomain(d entities.UserSimpleRule) {
-	copier.Copy(db, &d)
+	_ = copier.Copy(db, &d)
 }
 
 func SeedUserSimpleRule(db *gorm.DB) {}

@@ -21,12 +21,12 @@ func (ExpenseDB) TableName() string {
 
 func (db *ExpenseDB) ToDomain() entities.Expense {
 	var d entities.Expense
-	copier.Copy(&d, db)
+	_ = copier.Copy(&d, db)
 	return d
 }
 
 func (db *ExpenseDB) FromDomain(d entities.Expense) {
-	copier.Copy(db, &d)
+	_ = copier.Copy(db, &d)
 }
 
 func SeedExpense(db *gorm.DB) {}
