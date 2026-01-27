@@ -17,15 +17,16 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5 # Atualizado para v5 (mais estável)
       with:
-        go-version: '1.24'
-
-    - name: Install golangci-lint
-      run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+        go-version: '1.25' # Se o seu go.mod pede 1.25, mude aqui para '1.25'
+        cache: true
 
     - name: Run golangci-lint
-      run: golangci-lint run ./...
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: latest # Isso garante que o binário seja compatível com a versão do Go instalada
+        args: --timeout=5m ./...
 
   unit-tests:
     name: Unit Tests
