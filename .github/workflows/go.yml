@@ -5,7 +5,7 @@ name: Go CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -14,86 +14,89 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5 # Atualizado para v5 (mais estável)
-      with:
-        go-version: '1.25' # Se o seu go.mod pede 1.25, mude aqui para '1.25'
-        cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.6'
+          cache: true
 
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v6
-      with:
-        version: latest # Isso garante que o binário seja compatível com a versão do Go instalada
-        args: --timeout=5m ./...
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          # 'latest' ou 'v1.64' garantem suporte ao Go 1.25+
+          version: latest
+          args: --timeout=5m ./...
 
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.6'
+          cache: true
 
-    - name: Run unit tests
-      run: go test -v -short ./...
+      - name: Run unit tests
+        # Adicionado -coverprofile para gerar o arquivo que o upload-artifact espera
+        run: go test -v -short -coverprofile=coverage.out ./...
 
-    - name: Upload test coverage
-      uses: actions/upload-artifact@v4
-      with:
-        name: unit-test-coverage
-        path: coverage.out
-        if-no-files-found: ignore
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-coverage
+          path: coverage.out
+          if-no-files-found: ignore
 
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.6'
+          cache: true
 
-    - name: Set up Docker Compose
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Run integration tests
-      run: |
-        # Tente executar com Docker Compose primeiro
-        docker-compose -f docker-compose.test.yml up --build --exit-code-from app || \
-        # Se falhar, execute diretamente (útil para diagnóstico)
-        go test -v ./internal/integration_tests
-      env:
-        # Adicionar variáveis de ambiente necessárias para os testes
-        GO_ENV: test
+      - name: Run integration tests
+        run: |
+          # O GitHub Actions já vem com o Docker Compose V2 (comando: docker compose)
+          docker compose -f docker-compose.test.yml up --build --exit-code-from app || \
+          go test -v ./internal/integration_tests
+        env:
+          GO_ENV: test
 
   build:
     name: Build
     runs-on: ubuntu-latest
     needs: [lint, unit-tests, integration-tests]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.6'
+          cache: true
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifacts
-        path: |
-          *
-          !.git
-          !.github
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            ./flickly
+            ./bin/*
+          if-no-files-found: warn
