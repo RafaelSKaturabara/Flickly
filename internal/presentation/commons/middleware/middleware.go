@@ -9,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/users/viewmodel"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/viewmodel"
 )
 
 type contextKey string
@@ -55,10 +55,13 @@ func (m *JWTMiddleware) Auth() gin.HandlerFunc {
 			email := claims["email"].(string)
 			name := claims["name"].(string)
 			id := claims["id"].(string)
-			roles := make([]string, 0)
+			roles := make([]entities.Role, 0)
 			if rolesClaim, ok := claims["roles"].([]interface{}); ok {
 				for _, role := range rolesClaim {
-					roles = append(roles, role.(string))
+					if rStr, ok := role.(string); ok {
+						roleUpper := strings.ToUpper(rStr)
+						roles = append(roles, entities.Role(roleUpper))
+					}
 				}
 			}
 
@@ -123,10 +126,13 @@ func (m *JWTMiddleware) RefreshToken() gin.HandlerFunc {
 			email := claims["email"].(string)
 			name := claims["name"].(string)
 			id := claims["id"].(string)
-			roles := make([]string, 0)
+			roles := make([]entities.Role, 0)
 			if rolesClaim, ok := claims["roles"].([]interface{}); ok {
 				for _, role := range rolesClaim {
-					roles = append(roles, role.(string))
+					if rStr, ok := role.(string); ok {
+						roleUpper := strings.ToUpper(rStr)
+						roles = append(roles, entities.Role(roleUpper))
+					}
 				}
 			}
 
@@ -152,7 +158,7 @@ func (m *JWTMiddleware) RefreshToken() gin.HandlerFunc {
 }
 
 // Role é um middleware que verifica se o usuário tem a role necessária
-func (m *JWTMiddleware) Role(role string) gin.HandlerFunc {
+func (m *JWTMiddleware) Role(role entities.Role) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, ok := c.Request.Context().Value(UserContextKey).(*entities.User)
 		if user == nil {

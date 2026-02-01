@@ -3,11 +3,12 @@ package ioc
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core/mediator"
 	simpleRuleIRepositories "github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/repositories"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
-	dbinit "github.com/RafaelSKaturabara/Flickly/internal/infra/data/init"
+	dataUsers "github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity"
+	dataSimplerule "github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule"
 	simpleRuleRepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/repositories"
-	infrarepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/repositories"
+	infrarepositories "github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/repositories"
 )
 
 func InjectServices(serviceCollection utilities.IServiceCollection) {
@@ -16,13 +17,13 @@ func InjectServices(serviceCollection utilities.IServiceCollection) {
 	utilities.AddService[mediator.Mediator](serviceCollection, mediatR)
 
 	// users
-	usersDb := dbinit.GetUsersLocalDBConnection()
-	dbinit.MigrateDatabase(usersDb)
+	usersDb := dataUsers.GetUsersLocalDBConnection()
+	dataUsers.MigrateDatabase(usersDb)
 	utilities.AddService[repositories.IUserRepository](serviceCollection, infrarepositories.NewUserRepository(usersDb))
 
 	// simple rule
-	simpleRuleDb := dbinit.GetLocalSimpleRuleDBConnection()
-	dbinit.MigrateSimpleRuleDatabase(simpleRuleDb)
+	simpleRuleDb := dataSimplerule.GetLocalSimpleRuleDBConnection()
+	dataSimplerule.MigrateSimpleRuleDatabase(simpleRuleDb)
 
 	utilities.AddService[simpleRuleIRepositories.ICategoryRepository](serviceCollection, simpleRuleRepositories.NewCategoryRepository(simpleRuleDb))
 	utilities.AddService[simpleRuleIRepositories.ICommitmentRepository](serviceCollection, simpleRuleRepositories.NewCommitmentRepository(simpleRuleDb))

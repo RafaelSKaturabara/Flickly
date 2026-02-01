@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	command_handlers "github.com/RafaelSKaturabara/Flickly/internal/application/users/handlers"
+	command_handlers "github.com/RafaelSKaturabara/Flickly/internal/application/identity/handlers"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/handlers"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/helpers"
-	viewmodel "github.com/RafaelSKaturabara/Flickly/internal/presentation/users/viewmodel"
+	viewmodel "github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/viewmodel"
 )
 
 type UserHandler struct {

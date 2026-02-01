@@ -11,7 +11,7 @@ import (
 type ExpenseDB struct {
 	core.BaseEntityDB `gorm:"embedded"`
 	entities.Expense  `gorm:"embedded"`
-	UserSimpleRuleID            uuid.UUID        `gorm:"column:user_id;not null"`
+	UserSimpleRuleID  uuid.UUID        `gorm:"column:user_id;not null"`
 	User              UserSimpleRuleDB `gorm:"foreignKey:UserID;references:ID"`
 }
 

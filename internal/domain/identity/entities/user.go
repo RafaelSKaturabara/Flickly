@@ -12,7 +12,7 @@ type User struct {
 	Password      string   `json:"-"` // Senha não é serializada em JSON
 	Picture       string   `json:"picture,omitempty"`
 	VerifiedEmail bool     `json:"verified_email"`
-	Roles         []string `json:"roles"`
+	Roles         []Role   `json:"roles"`
 	AccessToken   string   `json:"-"`
 	TokenType     string   `json:"token_type"`
 	TokenExpiry   int64    `json:"-"`
@@ -27,7 +27,7 @@ func NewUser(name, email, clientID, clientSecret, password string) *User {
 		BaseEntity:    core.NewBaseEntity(),
 		Email:         email,
 		Name:          name,
-		Roles:         []string{"user"},
+		Roles:         []Role{RoleUser},
 		VerifiedEmail: false,
 		ClientID:      clientID,
 		ClientSecret:  clientSecret,
@@ -36,7 +36,7 @@ func NewUser(name, email, clientID, clientSecret, password string) *User {
 }
 
 // HasRole verifica se o usuário possui uma determinada role
-func (u *User) HasRole(role string) bool {
+func (u *User) HasRole(role Role) bool {
 	for _, r := range u.Roles {
 		if r == role {
 			return true
@@ -46,14 +46,14 @@ func (u *User) HasRole(role string) bool {
 }
 
 // AddRole adiciona uma role ao usuário
-func (u *User) AddRole(role string) {
+func (u *User) AddRole(role Role) {
 	if !u.HasRole(role) {
 		u.Roles = append(u.Roles, role)
 	}
 }
 
 // RemoveRole remove uma role do usuário
-func (u *User) RemoveRole(role string) {
+func (u *User) RemoveRole(role Role) {
 	for i, r := range u.Roles {
 		if r == role {
 			u.Roles = append(u.Roles[:i], u.Roles[i+1:]...)

@@ -8,7 +8,7 @@ import (
 	"github.com/RafaelSKaturabara/Flickly/internal/application/simplerule/queries"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
-	usersEntities "github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	usersEntities "github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/handlers"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/helpers"

@@ -17,8 +17,8 @@ func (CategoryDB) TableName() string {
 
 func (db *CategoryDB) ToDomain() entities.Category {
 	var d entities.Category
-    _ = copier.Copy(&d, db)
-    return d
+	_ = copier.Copy(&d, db)
+	return d
 }
 
 func (db *CategoryDB) FromDomain(d entities.Category) {

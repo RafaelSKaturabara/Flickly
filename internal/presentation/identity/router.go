@@ -2,10 +2,10 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/users/handlers"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/handlers"
 )
 
 // Configura e inicia o roteador Gin

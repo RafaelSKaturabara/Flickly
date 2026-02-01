@@ -181,7 +181,7 @@ func isSwaggerDesatualizado() bool {
 	arquivosPrincipais := []string{
 		"cmd/main.go",
 		"internal/api/flickly/router.go",
-		"internal/api/users/controllers/user_controller.go",
+		"internal/api/identity/controllers/user_controller.go",
 		"internal/infra/crosscutting/swagger/swagger_config.go",
 	}
 
@@ -197,9 +197,9 @@ func isSwaggerDesatualizado() bool {
 
 	// Diretórios principais para verificar
 	diretorios := []string{
-		"internal/domain/users/commands",
-		"internal/domain/users/entities",
-		"internal/api/users/viewmodels",
+		"internal/domain/identity/commands",
+		"internal/domain/identity/entities",
+		"internal/api/identity/viewmodels",
 		"internal/domain/core",
 		"internal/api",
 	}
@@ -271,9 +271,9 @@ func abrirNavegador(url string) error {
 func gerarHashTipos() string {
 	// Lista de diretórios que contêm modelos ou comandos relevantes para o Swagger
 	diretoriosChave := []string{
-		"internal/domain/users/commands",
-		"internal/domain/users/entities",
-		"internal/api/users/viewmodels",
+		"internal/domain/identity/commands",
+		"internal/domain/identity/entities",
+		"internal/api/identity/viewmodels",
 		"internal/domain/core",
 		"internal/api",
 	}

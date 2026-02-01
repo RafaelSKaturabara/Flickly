@@ -8,9 +8,9 @@ import (
 )
 
 type IncomeDB struct {
-	entities.Income `gorm:"embedded"`
-	UserSimpleRuleID          uuid.UUID        `gorm:"column:user_id;not null"`
-	User            UserSimpleRuleDB `gorm:"foreignKey:UserID;references:ID"`
+	entities.Income  `gorm:"embedded"`
+	UserSimpleRuleID uuid.UUID        `gorm:"column:user_id;not null"`
+	User             UserSimpleRuleDB `gorm:"foreignKey:UserID;references:ID"`
 }
 
 func (IncomeDB) TableName() string {

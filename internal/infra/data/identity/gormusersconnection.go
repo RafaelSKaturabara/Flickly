@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/gormmappings"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

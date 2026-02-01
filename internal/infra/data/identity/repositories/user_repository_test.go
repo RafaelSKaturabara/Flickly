@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/gormmappings"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -14,7 +14,10 @@ import (
 
 func setupTestDB() *gorm.DB {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	_ = db.AutoMigrate(&gormmappings.UserDB{})
+	err := db.AutoMigrate(&gormmappings.UserDB{})
+	if err != nil {
+		panic(err) // Isso vai te mostrar no log se a migração falhou aqui
+	}
 	return db
 }
 
@@ -158,14 +161,14 @@ func TestUpdateUserRoles(t *testing.T) {
 	assert.NoError(t, err, "Não deve ocorrer erro ao criar o usuário para teste")
 
 	// Execução
-	err = repository.UpdateUserRoles(ctx, user.ID, []string{"admin", "editor"})
+	err = repository.UpdateUserRoles(ctx, user.ID, []entities.Role{entities.RoleAdmin, entities.RoleUser})
 
 	// Verificações
 	assert.NoError(t, err)
 	retrieved, _ := repository.GetByID(user.ID)
 	assert.NotNil(t, retrieved)
-	assert.Contains(t, retrieved.Roles, "admin")
-	assert.Contains(t, retrieved.Roles, "editor")
+	assert.Contains(t, retrieved.Roles, "ADMIN")
+	assert.Contains(t, retrieved.Roles, "USER")
 }
 
 func TestDeleteUser(t *testing.T) {

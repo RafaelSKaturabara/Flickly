@@ -1,6 +1,6 @@
 package viewmodel
 
-import "github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+import "github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`

@@ -3,10 +3,10 @@ package ioc
 import (
 	"reflect"
 
-	domainrepos "github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	domainrepos "github.com/RafaelSKaturabara/Flickly/internal/domain/identity/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
-	dbinit "github.com/RafaelSKaturabara/Flickly/internal/infra/data/init"
-	userrepos "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/repositories"
+	userrepos "github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/repositories"
+	users "github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity"
 )
 
 type Container struct {
@@ -19,7 +19,7 @@ func NewContainer() *Container {
 	}
 
 	// Registrar o repositório de usuários
-	userRepo := userrepos.NewUserRepository(dbinit.GetUsersLocalDBConnection())
+	userRepo := userrepos.NewUserRepository(users.GetUsersLocalDBConnection())
 	container.services.AddServiceInstance(reflect.TypeOf((*domainrepos.IUserRepository)(nil)).Elem(), userRepo)
 
 	return container

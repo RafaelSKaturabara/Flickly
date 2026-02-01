@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/view_model"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/users/viewmodel"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/viewmodel"
 )
 
 func ViewModelAutomapperConfig(serviceCollection utilities.IServiceCollection) {

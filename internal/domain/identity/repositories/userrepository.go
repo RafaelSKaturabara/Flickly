@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 
 	"github.com/google/uuid"
 )

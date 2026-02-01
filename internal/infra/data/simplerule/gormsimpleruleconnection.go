@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/simplerule/gormmappings"
-	usergormmappings "github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
+	usergormmappings "github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/gormmappings"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

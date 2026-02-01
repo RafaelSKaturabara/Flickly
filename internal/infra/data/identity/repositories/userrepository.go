@@ -3,11 +3,11 @@ package repositories
 import (
 	"context"
 
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/repositories"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
-	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/users/gormmappings"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/identity/gormmappings"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -61,7 +61,7 @@ func (r *UserRepository) UpdateUserOAuthInfo(ctx context.Context, userID uuid.UU
 	}).Error
 }
 
-func (r *UserRepository) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []string) error {
+func (r *UserRepository) UpdateUserRoles(ctx context.Context, userID uuid.UUID, roles []entities.Role) error {
 	return r.DB.WithContext(ctx).Model(&gormmappings.UserDB{}).Where("id = ?", userID).Updates(&gormmappings.UserDB{
 		Roles: roles,
 	}).Error
