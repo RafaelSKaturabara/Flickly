@@ -17,6 +17,11 @@ func MigrateDatabase(db *gorm.DB) {
 	// 1. Rodar AutoMigrate
 	err := db.AutoMigrate(
 		&gormmappings.UserDB{},
+		&gormmappings.ClientDB{},
+		&gormmappings.RoleDB{},
+		&gormmappings.RedirectURIDB{},
+		&gormmappings.UserAccessDB{},
+		&gormmappings.AccessGrantDB{},
 	)
 	if err != nil {
 		log.Fatalf("[Database] Erro ao migrar: %v", err)
@@ -24,12 +29,17 @@ func MigrateDatabase(db *gorm.DB) {
 
 	// 2. Rodar Seeds (Ordem importa por causa de FKs)
 	log.Println("[Database] Verificando sementes (seeds)...")
+	gormmappings.SeedAccessGrants(db)
+	gormmappings.SeedClients(db)
+	gormmappings.SeedRedirectURIs(db)
+	gormmappings.SeedRoles(db)
+	gormmappings.SeedUserAccess(db)
 	gormmappings.SeedUsers(db)
 
 	log.Println("[Database] Infraestrutura de dados pronta.")
 }
 
-func GetPostgresDBConnection() *gorm.DB {
+func GetIdentityPostgresDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
 	// Exemplo: "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
 	dsn := "host=localhost user=postgres password=postgres dbname=flickly port=5432 sslmode=disable"
@@ -52,10 +62,10 @@ func GetPostgresDBConnection() *gorm.DB {
 	return db
 }
 
-func GetUsersLocalDBConnection() *gorm.DB {
+func GetIdentityLocalDBConnection() *gorm.DB {
 	// 1. Configuração do DSN (Data Source Name)
 	// Para SQLite, é apenas o nome do arquivo.
-	dsn := "users.db"
+	dsn := "identity.db"
 
 	// 2. Abrir a conexão
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{

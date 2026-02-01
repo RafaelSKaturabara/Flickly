@@ -31,7 +31,7 @@ func main() {
 	serviceCollection := utilities.NewServiceCollection()
 
 	ioc.InitAutomapper(serviceCollection)
-	ioc.InjectServices(serviceCollection)
+	ioc.InjectRepositories(serviceCollection)
 	ioc.InjectMediatorHandlers(serviceCollection)
 
 	users.Startup(router, serviceCollection)

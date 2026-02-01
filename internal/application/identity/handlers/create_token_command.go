@@ -3,13 +3,14 @@ package command_handlers
 import (
 	"context"
 
+	"github.com/RafaelSKaturabara/Flickly/internal/application"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core/mediator"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/repositories"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/services"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/valueobjects"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
 )
 
 type CreateTokenCommand struct {
@@ -41,13 +42,18 @@ func (h *CreateCreateTokenCommandHandler) Handle(c context.Context, request medi
 
 	if command.GrantType == "password" {
 		// Busca o usuário pelo email
-		user, err = h.userRepository.GetUserByEmailAndPasswordAndClientAndSecret(c, command.Username, command.Password, command.ClientID, command.ClientSecret)
+		passwordHash, err := valueobjects.NewPasswordHash(command.Password)
+		if err != nil {
+			return nil, err
+		}
+
+		user, err = h.userRepository.GetUserByEmailAndPasswordAndClient(c, command.Username, passwordHash.GetHash(), command.ClientID)
 		if err != nil || user == nil {
 			// corrigir erro na consulta
 			return nil, core.ErrInvalidCredentials(err)
 		}
 	} else if command.GrantType == "refresh_token" {
-		userJwt, ok := c.Value(middleware.UserContextKey).(*entities.User)
+		userJwt, ok := c.Value(application.UserContextKey).(*entities.User)
 		user, err = h.userRepository.GetByID(userJwt.GetID())
 		if !ok || user == nil {
 			// corrigir erro na consulta

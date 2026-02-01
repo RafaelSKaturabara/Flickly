@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/RafaelSKaturabara/Flickly/internal/application"
 	"github.com/RafaelSKaturabara/Flickly/internal/application/simplerule/commands"
 	"github.com/RafaelSKaturabara/Flickly/internal/application/simplerule/queries"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/simplerule/entities"
-	usersEntities "github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/handlers"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/helpers"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/simplerule/viewmodel"
 	"github.com/gin-gonic/gin"
 )
@@ -53,7 +52,7 @@ func (u *SimpleRuleHandler) PostExpense(c *gin.Context) {
 // @Failure 400 {object} object
 // @Router /simplerule/subcategories [get]
 func (u *SimpleRuleHandler) ListAllSubcategories(c *gin.Context) {
-	user, _ := c.Request.Context().Value(middleware.UserContextKey).(*usersEntities.User)
+	user, _ := c.Request.Context().Value(application.UserContextKey).(*application.UserAuth)
 
 	query := queries.ListAllSubcategoriesQuery{
 		UserSimpleRuleID: user.ID,

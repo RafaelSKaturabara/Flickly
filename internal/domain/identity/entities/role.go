@@ -1,28 +1,29 @@
 package entities
 
 import (
-	"database/sql/driver"
-	"fmt"
+	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
+	"github.com/google/uuid"
 )
 
-type Role string
+type Role struct {
+	core.BaseEntity
+	Value    string
+	ClientID *uuid.UUID // null indica que é default para todos os clientes
+	Client   *Client    // null indica que é default para todos os clientes
+}
+
+func NewRole(value string) Role {
+	return Role{
+		BaseEntity: core.NewBaseEntity(),
+		Value:      value,
+	}
+}
+
+func (r *Role) IsValid() bool {
+	return true
+}
 
 const (
-	RoleAdmin Role = "ADMIN"
-	RoleUser  Role = "USER"
+	RoleAdmin string = "admin"
+	RoleUser  string = "user"
 )
-
-// Valuer: Permite que o GORM grave o Enum no banco como string
-func (r Role) Value() (driver.Value, error) {
-	return string(r), nil
-}
-
-// Scanner: Permite que o GORM leia a string do banco e converta de volta para Role
-func (r *Role) Scan(value interface{}) error {
-	sv, ok := value.(string)
-	if !ok {
-		return fmt.Errorf("tipo inválido para Role: %T", value)
-	}
-	*r = Role(sv)
-	return nil
-}

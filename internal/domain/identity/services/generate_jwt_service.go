@@ -23,11 +23,12 @@ func (s *GenerateJWTService) AbleToRun(ctx context.Context, entity core.Entity) 
 func (s *GenerateJWTService) Run(ctx context.Context, entity core.Entity) error {
 	user := entity.(*entities.User)
 
+	panic("user.Roles")
 	claims := map[string]interface{}{
 		"id":    user.GetID().String(),
 		"email": user.Email,
 		"name":  user.Name,
-		"roles": user.Roles,
+		//"roles": user.Roles,
 	}
 
 	token, err := utilities.GenerateToken("config.JWTSecret", 15, claims)
@@ -36,6 +37,5 @@ func (s *GenerateJWTService) Run(ctx context.Context, entity core.Entity) error 
 	}
 
 	user.AccessToken = token
-	user.TokenType = "Bearer"
 	return nil
 }

@@ -5,17 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/RafaelSKaturabara/Flickly/internal/application"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/viewmodel"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/viewmodel"
 )
-
-type contextKey string
-
-const UserContextKey contextKey = "user"
 
 type JWTMiddleware struct {
 	jwtSecret string
@@ -55,27 +50,24 @@ func (m *JWTMiddleware) Auth() gin.HandlerFunc {
 			email := claims["email"].(string)
 			name := claims["name"].(string)
 			id := claims["id"].(string)
-			roles := make([]entities.Role, 0)
+			roles := make([]string, 0)
 			if rolesClaim, ok := claims["roles"].([]interface{}); ok {
 				for _, role := range rolesClaim {
 					if rStr, ok := role.(string); ok {
-						roleUpper := strings.ToUpper(rStr)
-						roles = append(roles, entities.Role(roleUpper))
+						roles = append(roles, rStr)
 					}
 				}
 			}
 
-			user := &entities.User{
+			userAuth := &application.UserAuth{
 				Email: email,
 				Name:  name,
 				Roles: roles,
-				BaseEntity: core.BaseEntity{
-					ID: uuid.MustParse(id),
-				},
+				ID:    uuid.MustParse(id),
 			}
 
 			// Adiciona o usuário ao context.Context
-			ctx := context.WithValue(c.Request.Context(), UserContextKey, user)
+			ctx := context.WithValue(c.Request.Context(), application.UserContextKey, userAuth)
 			c.Request = c.Request.WithContext(ctx)
 
 			c.Next()
@@ -126,27 +118,24 @@ func (m *JWTMiddleware) RefreshToken() gin.HandlerFunc {
 			email := claims["email"].(string)
 			name := claims["name"].(string)
 			id := claims["id"].(string)
-			roles := make([]entities.Role, 0)
+			roles := make([]string, 0)
 			if rolesClaim, ok := claims["roles"].([]interface{}); ok {
 				for _, role := range rolesClaim {
 					if rStr, ok := role.(string); ok {
-						roleUpper := strings.ToUpper(rStr)
-						roles = append(roles, entities.Role(roleUpper))
+						roles = append(roles, rStr)
 					}
 				}
 			}
 
-			user := &entities.User{
+			userAuth := &application.UserAuth{
 				Email: email,
 				Name:  name,
 				Roles: roles,
-				BaseEntity: core.BaseEntity{
-					ID: uuid.MustParse(id),
-				},
+				ID:    uuid.MustParse(id),
 			}
 
 			// Adiciona o usuário ao context.Context
-			ctx := context.WithValue(c.Request.Context(), UserContextKey, user)
+			ctx := context.WithValue(c.Request.Context(), application.UserContextKey, userAuth)
 			c.Request = c.Request.WithContext(ctx)
 
 			c.Next()
@@ -158,9 +147,9 @@ func (m *JWTMiddleware) RefreshToken() gin.HandlerFunc {
 }
 
 // Role é um middleware que verifica se o usuário tem a role necessária
-func (m *JWTMiddleware) Role(role entities.Role) gin.HandlerFunc {
+func (m *JWTMiddleware) Role(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, ok := c.Request.Context().Value(UserContextKey).(*entities.User)
+		user, ok := c.Request.Context().Value(application.UserContextKey).(*application.UserAuth)
 		if user == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuário não autenticado"})
 			c.Abort()

@@ -363,13 +363,86 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entities.Client": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Nome do App (ex: \"App Financeiro\")",
+                    "type": "string"
+                },
+                "redirectURIs": {
+                    "description": "Segurança: onde o OAuth pode devolver o código",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "secret": {
+                    "description": "A \"senha\" do aplicativo",
+                    "type": "string"
+                },
+                "updateAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.Role": {
+            "type": "object",
+            "properties": {
+                "client": {
+                    "description": "null indica que é default para todos os clientes",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entities.Client"
+                        }
+                    ]
+                },
+                "clientID": {
+                    "description": "null indica que é default para todos os clientes",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updateAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.User": {
             "type": "object",
             "properties": {
-                "client_id": {
-                    "type": "string"
-                },
-                "client_secret": {
+                "accessToken": {
                     "type": "string"
                 },
                 "createdAt": {
@@ -393,25 +466,69 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "passwordHash": {
+                    "$ref": "#/definitions/valueobjects.PasswordHash"
+                },
                 "picture": {
-                    "type": "string"
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "token_type": {
                     "type": "string"
                 },
                 "updateAt": {
                     "type": "string"
                 },
-                "verified_email": {
+                "userAccesses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.UserAccess"
+                    }
+                },
+                "verifiedEmail": {
                     "type": "boolean"
                 }
             }
+        },
+        "entities.UserAccess": {
+            "type": "object",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/entities.Client"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Role"
+                    }
+                },
+                "updateAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/entities.User"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "valueobjects.PasswordHash": {
+            "type": "object"
         },
         "viewmodel.ActionViewModel": {
             "type": "object",

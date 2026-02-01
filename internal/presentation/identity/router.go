@@ -1,11 +1,11 @@
 package users
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/application"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity/handlers"
+	"github.com/gin-gonic/gin"
 )
 
 // Configura e inicia o roteador Gin
@@ -30,7 +30,7 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {
-			user, _ := c.Request.Context().Value(middleware.UserContextKey).(*entities.User)
+			user, _ := c.Request.Context().Value(application.UserContextKey).(*application.UserAuth)
 			c.JSON(200, gin.H{"user": user})
 		})
 

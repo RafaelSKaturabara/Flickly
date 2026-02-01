@@ -1,10 +1,58 @@
 basePath: /
 definitions:
+  entities.Client:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      name:
+        description: 'Nome do App (ex: "App Financeiro")'
+        type: string
+      redirectURIs:
+        description: 'Segurança: onde o OAuth pode devolver o código'
+        items:
+          type: string
+        type: array
+      secret:
+        description: A "senha" do aplicativo
+        type: string
+      updateAt:
+        type: string
+    type: object
+  entities.Role:
+    properties:
+      client:
+        allOf:
+        - $ref: '#/definitions/entities.Client'
+        description: null indica que é default para todos os clientes
+      clientID:
+        description: null indica que é default para todos os clientes
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      updateAt:
+        type: string
+      value:
+        type: string
+    type: object
   entities.User:
     properties:
-      client_id:
-        type: string
-      client_secret:
+      accessToken:
         type: string
       createdAt:
         type: string
@@ -20,18 +68,47 @@ definitions:
         type: string
       name:
         type: string
+      passwordHash:
+        $ref: '#/definitions/valueobjects.PasswordHash'
       picture:
-        type: string
-      roles:
-        items:
-          type: string
-        type: array
-      token_type:
         type: string
       updateAt:
         type: string
-      verified_email:
+      userAccesses:
+        items:
+          $ref: '#/definitions/entities.UserAccess'
+        type: array
+      verifiedEmail:
         type: boolean
+    type: object
+  entities.UserAccess:
+    properties:
+      client:
+        $ref: '#/definitions/entities.Client'
+      clientID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/entities.Role'
+        type: array
+      updateAt:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      userID:
+        type: string
+    type: object
+  valueobjects.PasswordHash:
     type: object
   viewmodel.ActionViewModel:
     properties:
