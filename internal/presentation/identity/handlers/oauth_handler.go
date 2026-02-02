@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	command_handlers "github.com/RafaelSKaturabara/Flickly/internal/application/identity/handlers"
+	"github.com/RafaelSKaturabara/Flickly/internal/application/identity/commands"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/handlers"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/helpers"
@@ -83,5 +83,5 @@ func (c *OAuthHandler) Register(ctx *gin.Context) {
 // @Failure 500 {object} map[string]string "Erro interno do servidor"
 // @Router /oauth/token [post]
 func (c *OAuthHandler) Token(ctx *gin.Context) {
-	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, command_handlers.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
+	helpers.ViewHelperUrlEncodedWith[viewmodel.TokenRequest, commands.CreateTokenCommand, viewmodel.TokenResponse](ctx, &c.Handler)
 }

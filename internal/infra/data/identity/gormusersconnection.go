@@ -22,6 +22,7 @@ func MigrateDatabase(db *gorm.DB) {
 		&gormmappings.RedirectURIDB{},
 		&gormmappings.UserAccessDB{},
 		&gormmappings.AccessGrantDB{},
+		&gormmappings.AuthCodeDB{},
 	)
 	if err != nil {
 		log.Fatalf("[Database] Erro ao migrar: %v", err)
@@ -35,6 +36,7 @@ func MigrateDatabase(db *gorm.DB) {
 	gormmappings.SeedRoles(db)
 	gormmappings.SeedUserAccess(db)
 	gormmappings.SeedUsers(db)
+	gormmappings.SeedAuthCodes(db)
 
 	log.Println("[Database] Infraestrutura de dados pronta.")
 }

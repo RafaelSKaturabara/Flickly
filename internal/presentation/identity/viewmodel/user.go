@@ -18,3 +18,9 @@ type CreateUserRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type GetAuthorizeResponse struct {
+	Code       string `json:"code"`
+	ClientName string `json:"client_name"`
+	Expires_in int    `json:"expires_in"`
+}

@@ -14,6 +14,8 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 
 	// Configurando rotas
 	router.POST("/user", userController.PostUser)
+	router.GET("/authorize", userController.GetAuthorize)
+	router.POST("/login", userController.PostLogin)
 
 	// Cria o controlador de autenticação
 	oauthController := handlers.NewOAuthHandler(serviceCollection)

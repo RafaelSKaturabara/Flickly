@@ -1,4 +1,4 @@
-package command_handlers
+package commands
 
 import (
 	"context"
@@ -12,30 +12,30 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateUserCommand struct {
+type CreateLoginCommand struct {
 	Name     string
 	Email    string
 	Password string // Senha não é serializada em JSON
 	ClientID uuid.UUID
 }
 
-type CreateUserCommandHandler struct {
+type CreateLoginCommandHandler struct {
 	mediator       mediator.Mediator
 	userRepository repositories.IUserRepository
 }
 
-func NewCreateUserCommandHandler(serviceCollection utilities.IServiceCollection) *CreateUserCommandHandler {
-	return &CreateUserCommandHandler{
+func NewCreateLoginCommandHandler(serviceCollection utilities.IServiceCollection) *CreateLoginCommandHandler {
+	return &CreateLoginCommandHandler{
 		mediator:       utilities.GetService[mediator.Mediator](serviceCollection),
 		userRepository: utilities.GetService[repositories.IUserRepository](serviceCollection),
 	}
 }
 
-func (h *CreateUserCommandHandler) Handle(c context.Context, request mediator.Request) (mediator.Response, error) {
-	command := request.(CreateUserCommand)
+func (h *CreateLoginCommandHandler) Handle(c context.Context, request mediator.Request) (mediator.Response, error) {
+	command := request.(CreateLoginCommand)
 	passwordHash, err := valueobjects.NewPasswordHash(command.Password)
 	if err != nil {
-		return nil, err
+		return nil, err	
 	}
 
 	// Get Default UserAccess

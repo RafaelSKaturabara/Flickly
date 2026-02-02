@@ -3,6 +3,7 @@ package gormmappings
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
+	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -28,4 +29,19 @@ func (db *ClientDB) FromDomain(d entities.Client) {
 	_ = copier.Copy(db, &d)
 }
 
-func SeedClients(db *gorm.DB) {}
+func SeedClients(db *gorm.DB) {
+	var count int64
+	db.Model(&ClientDB{}).Count(&count)
+	if count > 0 {
+		return // Já tem dados
+	}
+
+	clientDB := ClientDB{}
+
+	client := entities.NewClient("Simle Rule", "26952b22-5a37-4c84-a96c-4ba6ef0c14e6")
+	client.ID = uuid.MustParse("8e705001-1089-4e90-86eb-5c10aa609165")
+
+	clientDB.FromDomain(client)
+
+	db.Create(&clientDB)
+}

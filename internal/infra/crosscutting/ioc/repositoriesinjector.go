@@ -25,6 +25,7 @@ func InjectRepositories(serviceCollection utilities.IServiceCollection) {
 	utilities.AddService[repositories.IRoleRepository](serviceCollection, identityRepositories.NewRoleRespository(usersDb))
 	utilities.AddService[repositories.IUserAccessRepository](serviceCollection, identityRepositories.NewUserAccessRepository(usersDb))
 	utilities.AddService[repositories.IUserRepository](serviceCollection, identityRepositories.NewUserRepository(usersDb))
+	utilities.AddService[repositories.IAuthCodeRepository](serviceCollection, identityRepositories.NewAuthCodeRepository(usersDb))
 
 	// simple rule
 	simpleRuleDb := dataSimplerule.GetLocalSimpleRuleDBConnection()

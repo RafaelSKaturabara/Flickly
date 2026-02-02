@@ -1,7 +1,6 @@
 package gormmappings
 
 import (
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
@@ -9,7 +8,7 @@ import (
 )
 
 type RedirectURIDB struct {
-	core.BaseEntity `gorm:"embedded"`
+	entities.RedirectURI `gorm:"embedded"`
 	Value           string    `gorm:"column:value;size:2048;not null"`
 	ClientID        uuid.UUID `gorm:"column:client_id;type:uuid;not null"`
 	Client          *ClientDB `gorm:"foreignKey:ClientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
