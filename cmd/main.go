@@ -17,7 +17,7 @@ import (
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/flickly"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/simplerule"
-	"github.com/RafaelSKaturabara/Flickly/internal/presentation/users"
+	"github.com/RafaelSKaturabara/Flickly/internal/presentation/identity"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	serviceCollection := utilities.NewServiceCollection()
 
 	ioc.InitAutomapper(serviceCollection)
-	ioc.InjectServices(serviceCollection)
+	ioc.InjectRepositories(serviceCollection)
 	ioc.InjectMediatorHandlers(serviceCollection)
 
 	users.Startup(router, serviceCollection)

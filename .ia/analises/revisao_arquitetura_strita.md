@@ -41,7 +41,7 @@ No seu código, **essa camada não existe**.
 1.  A API (`internal/services`) chama direto o Domínio?
     *   Não, ela chama `command_handlers`.
 2.  Onde estão os `command_handlers`?
-    *   Estão dentro de `internal/domain/users/command_handlers`.
+    *   Estão dentro de `internal/domain/identity/command_handlers`.
 
 **Erro de Conceito**:
 *   `Command Handlers` **SÃO** a camada de Aplicação.
@@ -58,8 +58,8 @@ Para seguir o seu diagrama fielmente:
 2.  **Criar a Camada de Aplicação**:
     *   Criar a pasta `internal/application`.
     *   Mover tudo que é "Orquestração" do Domínio para lá:
-        *   `internal/domain/users/command_handlers` -> `internal/application/users/handlers`
-        *   `internal/domain/users/services` -> `internal/application/users/services` (Se forem serviços de orquestração como JWT).
+        *   `internal/domain/identity/command_handlers` -> `internal/application/identity/handlers`
+        *   `internal/domain/identity/services` -> `internal/application/identity/services` (Se forem serviços de orquestração como JWT).
 
 3.  **Manter no Domínio** apenas as regras puras:
     *   Entities, Value Objects, Repository Interfaces.

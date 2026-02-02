@@ -304,7 +304,7 @@ func TestVerificarTiposAlterados(t *testing.T) {
 	}
 
 	// Criar diretório monitorado pelo hash
-	dirHash := "internal/domain/users/commands"
+	dirHash := "internal/domain/identity/commands"
 	if err := os.MkdirAll(dirHash, 0755); err != nil {
 		t.Fatalf("Erro ao criar diretório monitorado: %v", err)
 	}
@@ -399,11 +399,11 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 	diretorios := []string{
 		"cmd",
 		"internal/api/flickly",
-		"internal/api/users/controllers",
+		"internal/api/identity/controllers",
 		"internal/infra/crosscutting/swagger",
-		"internal/domain/users/commands",
-		"internal/domain/users/entities",
-		"internal/api/users/viewmodels",
+		"internal/domain/identity/commands",
+		"internal/domain/identity/entities",
+		"internal/api/identity/viewmodels",
 		"internal/domain/core",
 		"internal/api",
 	}
@@ -418,7 +418,7 @@ func TestIsSwaggerDesatualizado(t *testing.T) {
 	arquivos := map[string]string{
 		"cmd/main.go":                    "package main\nfunc main(){}",
 		"internal/api/flickly/router.go": "package flickly\nfunc Startup(){}",
-		"internal/api/users/controllers/user_controller.go":     "package controllers\nfunc NewUserController(){}",
+		"internal/api/identity/controllers/user_controller.go":     "package controllers\nfunc NewUserController(){}",
 		"internal/infra/crosscutting/swagger/swagger_config.go": "package swagger\nfunc SetupSwagger(){}",
 	}
 

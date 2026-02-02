@@ -1,10 +1,79 @@
 basePath: /
 definitions:
+  entities.Client:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      name:
+        description: 'Nome do App (ex: "App Financeiro")'
+        type: string
+      redirectURIs:
+        description: 'Segurança: onde o OAuth pode devolver o código'
+        items:
+          $ref: '#/definitions/entities.RedirectURI'
+        type: array
+      secret:
+        description: A "senha" do aplicativo
+        type: string
+      updateAt:
+        type: string
+    type: object
+  entities.RedirectURI:
+    properties:
+      client:
+        $ref: '#/definitions/entities.Client'
+      clientID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      updateAt:
+        type: string
+      value:
+        type: string
+    type: object
+  entities.Role:
+    properties:
+      client:
+        allOf:
+        - $ref: '#/definitions/entities.Client'
+        description: null indica que é default para todos os clientes
+      clientID:
+        description: null indica que é default para todos os clientes
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      updateAt:
+        type: string
+      value:
+        type: string
+    type: object
   entities.User:
     properties:
-      client_id:
-        type: string
-      client_secret:
+      accessToken:
         type: string
       createdAt:
         type: string
@@ -20,18 +89,47 @@ definitions:
         type: string
       name:
         type: string
+      passwordHash:
+        $ref: '#/definitions/valueobjects.PasswordHash'
       picture:
-        type: string
-      roles:
-        items:
-          type: string
-        type: array
-      token_type:
         type: string
       updateAt:
         type: string
-      verified_email:
+      userAccesses:
+        items:
+          $ref: '#/definitions/entities.UserAccess'
+        type: array
+      verifiedEmail:
         type: boolean
+    type: object
+  entities.UserAccess:
+    properties:
+      client:
+        $ref: '#/definitions/entities.Client'
+      clientID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/entities.Role'
+        type: array
+      updateAt:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      userID:
+        type: string
+    type: object
+  valueobjects.PasswordHash:
     type: object
   viewmodel.ActionViewModel:
     properties:
@@ -94,6 +192,26 @@ definitions:
       value:
         type: string
     type: object
+  viewmodel.CreateLoginRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - code
+    - email
+    - password
+    type: object
+  viewmodel.CreateLoginResponse:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
   viewmodel.CreateUserRequest:
     properties:
       email:
@@ -113,6 +231,15 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  viewmodel.GetAuthorizeResponse:
+    properties:
+      client_name:
+        type: string
+      code:
+        type: string
+      expires_in:
+        type: integer
     type: object
   viewmodel.HeaderViewModel:
     properties:
@@ -276,6 +403,36 @@ paths:
       summary: Verificar versão da API
       tags:
       - system
+  /authorize:
+    get:
+      consumes:
+      - application/json
+      description: Inicia o fluxo de autorização OAuth2
+      parameters:
+      - description: ID do Cliente
+        in: query
+        name: client_id
+        required: true
+        type: string
+      - description: Desafio de Código
+        in: query
+        name: challenge
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.GetAuthorizeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Obter autorização
+      tags:
+      - users
   /health:
     get:
       description: Retorna o status de saúde do servidor
@@ -288,6 +445,32 @@ paths:
       summary: Verificar saúde do servidor
       tags:
       - system
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo login com os dados fornecidos
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/viewmodel.CreateLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/viewmodel.CreateLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+      summary: Cria um login para um usuário
+      tags:
+      - users
   /mock:
     put:
       consumes:

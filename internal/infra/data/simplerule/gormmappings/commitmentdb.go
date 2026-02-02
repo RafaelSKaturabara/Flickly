@@ -10,7 +10,7 @@ import (
 type CommitmentDB struct {
 	entities.Commitment `gorm:"embedded"`
 	Description         string           `gorm:"type:varchar(255);not null"`
-	UserSimpleRuleID              uuid.UUID        `gorm:"column:user_id;not null"`
+	UserSimpleRuleID    uuid.UUID        `gorm:"column:user_id;not null"`
 	User                UserSimpleRuleDB `gorm:"foreignKey:UserID;references:ID"`
 }
 
@@ -25,7 +25,7 @@ func (db *CommitmentDB) ToDomain() entities.Commitment {
 }
 
 func (db *CommitmentDB) FromDomain(d entities.Commitment) {
-	_ = copier.Copy(db, &d)	
+	_ = copier.Copy(db, &d)
 }
 
 func SeedCommitment(db *gorm.DB) {}

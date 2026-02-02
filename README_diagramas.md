@@ -39,11 +39,11 @@ A aplicação segue uma arquitetura em camadas com os seguintes componentes prin
 
 1. **Camada de API (api/)**: Contém os controladores e rotas da aplicação.
    - **flickly/**: Endpoints relacionados ao core da aplicação
-   - **users/**: Endpoints relacionados aos usuários
+   - **identity/**: Endpoints relacionados aos usuários
 
 2. **Camada de Domínio (domain/)**: Contém a lógica de negócios e entidades.
    - **core/**: Componentes base usados por todo o domínio
-   - **users/**: Domínio específico para usuários
+   - **identity/**: Domínio específico para usuários
    - **flickly/**: Domínio específico para funcionalidades do Flickly
 
 3. **Camada de Infraestrutura (infra/)**: Contém implementações concretas e utilitários.

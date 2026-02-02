@@ -1,7 +1,7 @@
 package simplerule
 
 import (
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/users/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/application"
 	"github.com/RafaelSKaturabara/Flickly/internal/infra/crosscutting/utilities"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/commons/middleware"
 	"github.com/RafaelSKaturabara/Flickly/internal/presentation/simplerule/handlers"
@@ -24,7 +24,7 @@ func Startup(router *gin.Engine, serviceCollection utilities.IServiceCollection)
 
 		// Rotas protegidas
 		authGroup.GET("/me", jwtMiddleware.Auth(), func(c *gin.Context) {
-			user, _ := c.Request.Context().Value(middleware.UserContextKey).(*entities.User)
+			user, _ := c.Request.Context().Value(application.UserContextKey).(*application.UserAuth)
 			c.JSON(200, gin.H{"user": user})
 		})
 

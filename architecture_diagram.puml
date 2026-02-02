@@ -26,8 +26,8 @@ package "Camada de API" as API <<API>> {
     }
     
     package "API Usuários" as APIUsers {
-        [api/users/router.go] as UsersRouter
-        [api/users/controllers/user-controller.go] as UserController
+        [api/identity/router.go] as UsersRouter
+        [api/identity/controllers/user-controller.go] as UserController
     }
 }
 
@@ -39,9 +39,9 @@ package "Camada de Domínio" as Domain <<Domain>> {
     }
     
     package "Domínio de Usuários" as UsersDomain {
-        [domain/users/entities/user.go] as UserEntity
-        [domain/users/commands/create-user-command.go] as CreateUserCommand
-        [domain/users/repositories/IUserRepository] as IUserRepository
+        [domain/identity/entities/user.go] as UserEntity
+        [domain/identity/commands/create-user-command.go] as CreateUserCommand
+        [domain/identity/repositories/IUserRepository] as IUserRepository
     }
     
     package "Domínio de Flickly" as FlicklyDomain {
@@ -57,7 +57,7 @@ package "Camada de Infraestrutura" as Infrastructure <<Infrastructure>> {
     }
     
     package "Repositórios" as Repositories {
-        [infra/data/users/repositories/user-repository.go] as UserRepository
+        [infra/data/identity/repositories/user-repository.go] as UserRepository
     }
 }
 

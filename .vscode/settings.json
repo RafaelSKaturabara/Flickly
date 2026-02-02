@@ -9,8 +9,8 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "database": "D:\\repos\\Go\\Flicklyusers.db",
-            "name": "Users"
+            "name": "Identity",
+            "database": "${workspaceFolder:Flickly}/identity.db"
         }
     ],
     "sqltools.useNodeRuntime": true
