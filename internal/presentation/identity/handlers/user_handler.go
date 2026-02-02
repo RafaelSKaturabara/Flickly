@@ -23,7 +23,7 @@ type UserHandler struct {
 // NewUserController cria uma nova instância de UserController
 func NewUserHandler(serviceCollection utilities.IServiceCollection) *UserHandler {
 	return &UserHandler{
-		Handler: handlers.NewHandler(serviceCollection),
+		Handler:  handlers.NewHandler(serviceCollection),
 		mediator: utilities.GetService[mediator.Mediator](serviceCollection),
 	}
 }
@@ -44,35 +44,36 @@ func (u *UserHandler) PostUser(c *gin.Context) {
 }
 
 // GetAuthorize cria um novo usuário
-// @Summary Criar usuário
-// @Description Cria um novo usuário com os dados fornecidos
+// @Summary Obter autorização
+// @Description Inicia o fluxo de autorização OAuth2
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body viewmodel.CreateUserRequest true "Dados do usuário"
-// @Success 200 {object} viewmodel.CreateUserResponse
+// @Param client_id query string true "ID do Cliente"
+// @Param challenge query string true "Desafio de Código"
+// @Success 200 {object} viewmodel.GetAuthorizeResponse
 // @Failure 400 {object} object
 // @Router /authorize [get]
 func (u *UserHandler) GetAuthorize(c *gin.Context) {
 
-	// Get ClientID from header
+	// Get ClientID from query
 	clientIDStr := c.Query("client_id")
-		
+
 	clientID, _ := uuid.Parse(clientIDStr)
 
 	command := commands.GetAuthorizeCommand{
 		Challenge: c.Query("challenge"),
-		ClientID: clientID,
+		ClientID:  clientID,
 	}
 
 	authCodeResponse, _ := u.mediator.Send(c.Request.Context(), command)
-	authCode := authCodeResponse.(entities.AuthCode)
+	authCode := authCodeResponse.(*entities.AuthCode)
 
-	// ver se client já vem preenchido. 
+	// ver se client já vem preenchido.
 	response := viewmodel.GetAuthorizeResponse{
 		Code:       authCode.Code,
 		ClientName: authCode.Client.Name,
-		Expires_in: int(authCode.ExpiresAt.Sub(time.Now()).Seconds()),
+		ExpiresIn:  int(time.Until(authCode.ExpiresAt).Seconds()),
 	}
 
 	u.Handler.SuccessResponse(c, response, http.StatusOK)
@@ -89,6 +90,6 @@ func (u *UserHandler) GetAuthorize(c *gin.Context) {
 // @Failure 400 {object} object
 // @Router /login [post]
 func (u *UserHandler) PostLogin(c *gin.Context) {
-	helpers.ViewHelperWithSuccessStatusCode[viewmodel.CreateUserRequest, commands.CreateLoginCommand, viewmodel.CreateUserResponse](
+	helpers.ViewHelperWithSuccessStatusCode[viewmodel.CreateLoginRequest, commands.CreateLoginCommand, viewmodel.CreateLoginResponse](
 		c, &u.Handler, http.StatusCreated)
 }

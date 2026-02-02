@@ -49,5 +49,7 @@ func (h *GetAuthorizeCommandHandler) Handle(c context.Context, request mediator.
 		return nil, err
 	}
 
+	authCode.Client = client
+
 	return authCode, nil
 }

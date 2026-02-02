@@ -36,6 +36,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/authorize": {
+            "get": {
+                "description": "Inicia o fluxo de autorização OAuth2",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Obter autorização",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do Cliente",
+                        "name": "client_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Desafio de Código",
+                        "name": "challenge",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.GetAuthorizeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Retorna o status de saúde do servidor",
@@ -50,6 +95,46 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {}
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Cria um novo login com os dados fornecidos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Cria um login para um usuário",
+                "parameters": [
+                    {
+                        "description": "Dados do usuário",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.CreateLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/viewmodel.CreateLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
                     }
                 }
             }
@@ -389,7 +474,7 @@ const docTemplate = `{
                     "description": "Segurança: onde o OAuth pode devolver o código",
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/entities.RedirectURI"
                     }
                 },
                 "secret": {
@@ -397,6 +482,38 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updateAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.RedirectURI": {
+            "type": "object",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/entities.Client"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updateAt": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }
@@ -624,6 +741,36 @@ const docTemplate = `{
                 }
             }
         },
+        "viewmodel.CreateLoginRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "viewmodel.CreateLoginResponse": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
         "viewmodel.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -652,6 +799,20 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "viewmodel.GetAuthorizeResponse": {
+            "type": "object",
+            "properties": {
+                "client_name": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
                 }
             }
         },

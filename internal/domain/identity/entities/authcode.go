@@ -20,6 +20,7 @@ type AuthCode struct {
 
 func NewAuthCode(code string, clientID uuid.UUID, userID *uuid.UUID, codeChallenge string, expiresAt time.Time) *AuthCode {
 	return &AuthCode{
+		BaseEntity: core.NewBaseEntity(),
 		Code:          code,
 		ClientID:      clientID,
 		UserID:        userID,

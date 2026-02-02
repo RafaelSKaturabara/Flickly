@@ -22,5 +22,15 @@ type CreateUserRequest struct {
 type GetAuthorizeResponse struct {
 	Code       string `json:"code"`
 	ClientName string `json:"client_name"`
-	Expires_in int    `json:"expires_in"`
+	ExpiresIn  int    `json:"expires_in"`
+}
+
+type CreateLoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+	Code     string `json:"code" binding:"required,uuid"`
+}
+
+type CreateLoginResponse struct {
+	Code string `json:"code" binding:"required,uuid"`
 }
