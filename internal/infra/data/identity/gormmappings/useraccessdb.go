@@ -2,17 +2,19 @@ package gormmappings
 
 import (
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
+	"github.com/RafaelSKaturabara/Flickly/internal/infra/data/core"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
 type UserAccessDB struct {
-	ID                  uuid.UUID `gorm:"primaryKey;type:uuid"`
-	entities.UserAccess `gorm:"embedded"`
-	User                *UserDB   `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	Client              *ClientDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	Roles               []RoleDB  `gorm:"many2many:user_access_roles;foreignKey:ID;joinForeignKey:UserAccessID;references:ID;joinReferences:RoleID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	core.EntityDB `gorm:"embedded"`
+	UserID        uuid.UUID `gorm:"type:uuid;column:user_id;not null"`
+	User          *UserDB   `gorm:"foreignKey:UserID"`
+	ClientID      uuid.UUID `gorm:"type:uuid;column:client_id;not null"`
+	Client        *ClientDB `gorm:"foreignKey:ClientID"`
+	RolesDB       []RoleDB  `gorm:"many2many:user_access_roles;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (UserAccessDB) TableName() string {
