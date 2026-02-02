@@ -1,7 +1,6 @@
 package gormmappings
 
 import (
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
@@ -9,10 +8,9 @@ import (
 )
 
 type ClientDB struct {
-	core.BaseEntity `gorm:"embedded"`
-	Name            string          `gorm:"column:name;size:255;not null"`
-	Secret          string          `gorm:"column:secret;size:255;not null"`
-	RedirectURIs    []RedirectURIDB `gorm:"foreignKey:ClientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ID              uuid.UUID `gorm:"primaryKey;type:uuid"`
+	entities.Client `gorm:"embedded"`
+	RedirectURIs    []RedirectURIDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (ClientDB) TableName() string {

@@ -8,10 +8,9 @@ import (
 )
 
 type RedirectURIDB struct {
+	ID                   uuid.UUID `gorm:"primaryKey;type:uuid"`
 	entities.RedirectURI `gorm:"embedded"`
-	Value           string    `gorm:"column:value;size:2048;not null"`
-	ClientID        uuid.UUID `gorm:"column:client_id;type:uuid;not null"`
-	Client          *ClientDB `gorm:"foreignKey:ClientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Client               *ClientDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (RedirectURIDB) TableName() string {

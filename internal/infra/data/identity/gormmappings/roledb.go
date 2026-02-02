@@ -1,7 +1,6 @@
 package gormmappings
 
 import (
-	"github.com/RafaelSKaturabara/Flickly/internal/domain/core"
 	"github.com/RafaelSKaturabara/Flickly/internal/domain/identity/entities"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
@@ -9,10 +8,9 @@ import (
 )
 
 type RoleDB struct {
-	core.BaseEntity `gorm:"embedded"`
-	Value           string     `gorm:"column:value;size:255;not null"`
-	ClientID        *uuid.UUID `gorm:"column:client_id;type:uuid"`
-	Client          *ClientDB  `gorm:"foreignKey:ClientID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ID            uuid.UUID `gorm:"primaryKey;type:uuid"`
+	entities.Role `gorm:"embedded"`
+	Client        *ClientDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (RoleDB) TableName() string {

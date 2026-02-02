@@ -5,18 +5,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
-	"time"
 )
 
 type AuthCodeDB struct {
+	ID                uuid.UUID `gorm:"primaryKey;type:uuid"`
 	entities.AuthCode `gorm:"embedded"`
-	Code          string    `gorm:"column:code;size:255;not null;uniqueIndex"`
-	ClientID      uuid.UUID `gorm:"column:client_id;type:uuid;not null"`
-	Client        *ClientDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE;OnDelete:CASCADE"`
-	UserID        uuid.UUID `gorm:"column:user_id;type:uuid;not null"`
-	User          *UserDB   `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;OnDelete:CASCADE"`
-	CodeChallenge string    `gorm:"column:code_challenge;size:255;not null"`
-	ExpiresAt     time.Time `gorm:"column:expires_at;not null;index"`
+	Client            *ClientDB `gorm:"foreignKey:ClientID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User              *UserDB   `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (AuthCodeDB) TableName() string {
